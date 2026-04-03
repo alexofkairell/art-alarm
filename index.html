@@ -1063,14 +1063,7 @@ function render() {
   var sortBy = document.getElementById('sort-select').value || 'zone';
 
   var filtered = products.filter(function(p) {
-    var hasZone = p.zone && p.zone.trim() !== '';
-    if (activeZone === 'all') {
-      if (!hasZone) return false;
-    } else if (activeZone === 'unzoned') {
-      if (hasZone) return false;
-    } else {
-      if (p.zone !== activeZone) return false;
-    }
+    if (activeZone !== 'all' && p.zone !== activeZone) return false;
     if (query) {
       var hay = ((p.name||'') + ' ' + (p.artist||'') + ' ' + (p.zone||'') + ' ' + (p.serial||'') + ' ' + (p.location||'')).toLowerCase();
       if (hay.indexOf(query) === -1) return false;
@@ -1079,7 +1072,6 @@ function render() {
   });
 
   filtered.sort(function(a, b) {
-    if (activeZone === 'unzoned') return (a.name||'').localeCompare(b.name||'');
     if (sortBy === 'name') return (a.name||'').localeCompare(b.name||'');
     if (sortBy === 'artist') return (a.artist||'').localeCompare(b.artist||'');
     if (sortBy === 'zone') return (a.zone||'').localeCompare(b.zone||'');
@@ -1103,12 +1095,6 @@ function renderZoneChips() {
   products.forEach(function(p) {
     if (p.zone && zones.indexOf(p.zone) === -1) zones.push(p.zone);
   });
-  zones.sort(function(a, b) {
-    var numA = parseFloat(a.replace(/[^0-9.]/g, ''));
-    var numB = parseFloat(b.replace(/[^0-9.]/g, ''));
-    if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
-    return a.localeCompare(b);
-  });
 
   var container = document.getElementById('zone-chips');
   var allChip = '<div class="zone-chip' + (activeZone==='all'?' active':'') +
@@ -1122,14 +1108,7 @@ function renderZoneChips() {
       '" style="' + style + '" onclick="setZone(\'' + esc(z).replace(/'/g,"\\'") + '\',this)">' + esc(z) + '</div>';
   }).join('');
 
-  var unzonedCount = products.filter(function(p){ return !p.zone || p.zone.trim() === ''; }).length;
-  var unzonedChip = unzonedCount > 0
-    ? '<div class="zone-chip' + (activeZone === 'unzoned' ? ' active' : '') +
-      '" data-zone="unzoned" onclick="setZone('unzoned',this)" style="' +
-      (activeZone === 'unzoned' ? 'background:var(--text2);border-color:var(--text2);color:#fff' : '') +
-      '">Unzoned (' + unzonedCount + ')</div>'
-    : '';
-  container.innerHTML = allChip + zoneHtml + unzonedChip;
+  container.innerHTML = allChip + zoneHtml;
 
   // Re-apply active style to "all" chip
   if (activeZone === 'all') {
