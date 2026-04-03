@@ -5,806 +5,238 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Art Alarm</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-
-<!-- Firebase compat SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
 <style>
 :root {
-  --bg: #ede8de;
-  --card: #ffffff;
-  --navy: #0d1b2a;
-  --orange: #ff5c1a;
-  --teal: #00b8a9;
-  --pink: #ff477e;
-  --purple: #7c3aed;
-  --text: #0d1b2a;
-  --text2: #5a6478;
-  --border: #e2ddd4;
+  --bg: #ede8de; --card: #ffffff; --navy: #0d1b2a; --orange: #ff5c1a;
+  --teal: #00b8a9; --pink: #ff477e; --purple: #7c3aed;
+  --text: #0d1b2a; --text2: #5a6478; --border: #e2ddd4;
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-}
-
-/* ===== LOGIN ===== */
-#login-screen {
-  position: fixed; inset: 0; z-index: 99999;
-  background: var(--navy);
-  display: flex; align-items: center; justify-content: center;
-  flex-direction: column;
-  padding: 24px;
-}
-
-.login-box {
-  background: #fff;
-  border-radius: 20px;
-  padding: 40px 36px;
-  width: 100%; max-width: 400px;
-  box-shadow: 0 24px 80px rgba(0,0,0,0.4);
-}
-
-.login-logo {
-  font-family: 'Syne', sans-serif;
-  font-size: 28px; font-weight: 800;
-  color: var(--navy);
-  margin-bottom: 6px;
-  display: flex; align-items: center; gap: 8px;
-}
-
+#login-screen { position: fixed; inset: 0; z-index: 99999; background: var(--navy); display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 24px; }
+.login-box { background: #fff; border-radius: 20px; padding: 40px 36px; width: 100%; max-width: 400px; box-shadow: 0 24px 80px rgba(0,0,0,0.4); }
+.login-logo { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--navy); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
 .login-logo span { color: var(--orange); }
-
-.login-sub {
-  font-size: 13px; color: var(--text2);
-  margin-bottom: 28px;
-}
-
-.google-btn {
-  width: 100%; padding: 13px 20px;
-  background: #fff; color: #3c4043;
-  border: 1.5px solid #dadce0;
-  border-radius: 10px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 15px; font-weight: 500;
-  cursor: pointer; transition: all 0.2s;
-  display: flex; align-items: center;
-  justify-content: center; gap: 12px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-}
-
-.google-btn:hover {
-  background: #f8f9fa;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-}
-
-.login-error {
-  color: var(--pink); font-size: 13px;
-  margin-top: 14px; display: none; text-align: center;
-}
-
-.login-checking {
-  display: flex; align-items: center;
-  justify-content: center; gap: 10px;
-  margin-top: 14px; color: var(--text2);
-  font-size: 13px;
-}
-
+.login-sub { font-size: 13px; color: var(--text2); margin-bottom: 28px; }
+.google-btn { width: 100%; padding: 13px 20px; background: #fff; color: #3c4043; border: 1.5px solid #dadce0; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+.google-btn:hover { background: #f8f9fa; }
+.login-error { color: var(--pink); font-size: 13px; margin-top: 14px; display: none; text-align: center; }
+.login-checking { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 14px; color: var(--text2); font-size: 13px; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.login-spinner {
-  width: 16px; height: 16px;
-  border: 2px solid var(--border);
-  border-top-color: var(--orange);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
+.login-spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--orange); border-radius: 50%; animation: spin 0.7s linear infinite; }
 
-/* ===== APP WRAP ===== */
 #app-wrap { display: none; }
-
-/* ===== TOPBAR ===== */
-#topbar {
-  background: var(--navy);
-  position: sticky; top: 0; z-index: 100;
-  padding: 0 16px;
-}
-
-#topbar-row1 {
-  display: flex; align-items: center;
-  justify-content: space-between;
-  height: 52px;
-}
-
-.topbar-logo {
-  font-family: 'Syne', sans-serif;
-  font-size: 20px; font-weight: 800;
-  color: #fff; letter-spacing: -0.02em;
-}
-
+#topbar { background: var(--navy); position: sticky; top: 0; z-index: 100; padding: 0 16px; }
+#topbar-row1 { display: flex; align-items: center; justify-content: space-between; height: 52px; }
+.topbar-logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
 .topbar-logo span { color: var(--orange); }
-
-.icon-btn {
-  background: none; border: none;
-  color: #fff; font-size: 22px;
-  cursor: pointer; padding: 6px;
-  line-height: 1; border-radius: 8px;
-  transition: background 0.15s;
-}
-
-.icon-btn:hover { background: rgba(255,255,255,0.1); }
-
-#topbar-row2 {
-  display: flex; align-items: center;
-  gap: 10px; padding-bottom: 12px;
-}
-
-#search-input {
-  flex: 1; padding: 10px 14px;
-  background: rgba(255,255,255,0.1);
-  border: 1.5px solid rgba(255,255,255,0.15);
-  border-radius: 10px;
-  color: #fff; font-family: 'DM Sans', sans-serif;
-  font-size: 14px; outline: none;
-  transition: border 0.2s;
-}
-
+.icon-btn { background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; padding: 6px; line-height: 1; border-radius: 8px; }
+#topbar-row2 { display: flex; align-items: center; gap: 10px; padding-bottom: 12px; }
+#search-input { flex: 1; padding: 10px 14px; background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.15); border-radius: 10px; color: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; }
 #search-input::placeholder { color: rgba(255,255,255,0.45); }
-#search-input:focus { border-color: rgba(255,255,255,0.4); }
+.add-btn { background: var(--orange); color: #fff; border: none; border-radius: 10px; width: 40px; height: 40px; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
-.add-btn {
-  background: var(--orange); color: #fff;
-  border: none; border-radius: 10px;
-  width: 40px; height: 40px;
-  font-size: 22px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; transition: opacity 0.2s;
-}
-
-.add-btn:hover { opacity: 0.9; }
-
-/* ===== MAIN ===== */
 #main { padding: 16px; }
+#filter-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.filter-label { font-size: 12px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0; }
+.zone-chips { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+.zone-chip { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1.5px solid var(--border); background: #fff; color: var(--text2); }
+.filter-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.view-toggle { display: flex; background: #fff; border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; }
+.view-btn { padding: 6px 10px; border: none; background: none; cursor: pointer; font-size: 16px; color: var(--text2); }
+.view-btn.active { background: var(--navy); color: #fff; }
+.sort-select { padding: 6px 10px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); background: #fff; outline: none; cursor: pointer; }
 
-/* ===== FILTER BAR ===== */
-#filter-bar {
-  display: flex; align-items: center;
-  gap: 8px; margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-
-.filter-label {
-  font-size: 12px; font-weight: 500;
-  color: var(--text2); text-transform: uppercase;
-  letter-spacing: 0.06em; flex-shrink: 0;
-}
-
-.zone-chips {
-  display: flex; gap: 6px; flex-wrap: wrap; flex: 1;
-}
-
-.zone-chip {
-  padding: 5px 12px; border-radius: 20px;
-  font-size: 12px; font-weight: 500;
-  cursor: pointer; border: 1.5px solid transparent;
-  transition: all 0.15s; background: #fff;
-  color: var(--text2); border-color: var(--border);
-}
-
-.zone-chip.active {
-  color: #fff; border-color: transparent;
-}
-
-.filter-right {
-  display: flex; align-items: center; gap: 8px; margin-left: auto;
-}
-
-.view-toggle {
-  display: flex; background: #fff;
-  border: 1.5px solid var(--border);
-  border-radius: 8px; overflow: hidden;
-}
-
-.view-btn {
-  padding: 6px 10px; border: none;
-  background: none; cursor: pointer;
-  font-size: 16px; color: var(--text2);
-  transition: all 0.15s;
-}
-
-.view-btn.active {
-  background: var(--navy); color: #fff;
-}
-
-.sort-select {
-  padding: 6px 10px;
-  border: 1.5px solid var(--border);
-  border-radius: 8px; font-size: 13px;
-  font-family: 'DM Sans', sans-serif;
-  color: var(--text); background: #fff;
-  outline: none; cursor: pointer;
-}
-
-/* ===== GRID ===== */
-#product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-}
-
-@keyframes cardIn {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.card {
-  background: var(--card);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(13,27,42,0.08);
-  animation: cardIn 0.3s ease both;
-  transition: box-shadow 0.2s;
-}
-
-.card:hover {
-  box-shadow: 0 6px 24px rgba(13,27,42,0.14);
-}
-
-.card-img-wrap {
-  background: #f0ece4;
-  position: relative; overflow: hidden;
-}
-
-.card-img-wrap img {
-  width: 100%; height: auto;
-  display: block;
-}
-
-.card-no-img {
-  width: 100%; height: 160px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 40px; color: var(--border);
-}
-
-.zone-tag {
-  position: absolute; top: 10px; left: 10px;
-  padding: 3px 10px; border-radius: 12px;
-  font-size: 11px; font-weight: 600;
-  color: #fff; letter-spacing: 0.02em;
-}
-
+#product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+@keyframes cardIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+.card { background: var(--card); border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(13,27,42,0.08); animation: cardIn 0.3s ease both; }
+.card-img-wrap { background: #f0ece4; position: relative; overflow: hidden; }
+.card-img-wrap img { width: 100%; height: auto; display: block; }
+.card-no-img { width: 100%; height: 160px; display: flex; align-items: center; justify-content: center; font-size: 40px; color: var(--border); }
 .card-body { padding: 14px 16px; }
-
-.card-title-row {
-  display: flex; align-items: flex-start;
-  justify-content: space-between; gap: 10px;
-}
-
-.card-zone-block {
-  flex-shrink: 0;
-  border: 1.5px solid;
-  border-radius: 8px;
-  padding: 4px 10px;
-  text-align: center;
-  min-width: 52px;
-}
-
-.card-zone-label {
-  font-size: 9px; font-weight: 700;
-  letter-spacing: 0.1em; color: var(--text2);
-  text-transform: uppercase; line-height: 1;
-  margin-bottom: 2px;
-}
-
-.card-zone-val {
-  font-family: 'DM Mono', monospace;
-  font-size: 12px; font-weight: 500;
-  line-height: 1;
-}
-
-.card-name {
-  font-family: 'Syne', sans-serif;
-  font-size: 15px; font-weight: 700;
-  color: var(--text); line-height: 1.3;
-  margin-bottom: 2px;
-}
-
-.card-artist {
-  font-size: 13px; font-style: italic;
-  color: var(--text2); padding-bottom: 10px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 10px;
-}
-
+.card-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.card-zone-block { flex-shrink: 0; border: 1.5px solid; border-radius: 8px; padding: 4px 10px; text-align: center; min-width: 52px; }
+.card-zone-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; color: var(--text2); text-transform: uppercase; line-height: 1; margin-bottom: 2px; }
+.card-zone-val { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; line-height: 1; }
+.card-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.3; margin-bottom: 2px; }
+.card-artist { font-size: 13px; font-style: italic; color: var(--text2); padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
 .card-title-row + .card-meta { margin-top: 10px; }
-
-.card-meta {
-  border: 1.5px solid var(--border);
-  border-radius: 8px; overflow: hidden;
-  margin-bottom: 10px; font-size: 12px;
-}
-
-.meta-pair-row {
-  display: grid; grid-template-columns: 1fr 1fr;
-  border-bottom: 1px solid var(--border);
-}
-
+.card-meta { border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 10px; font-size: 12px; }
+.meta-pair-row { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border); }
 .meta-pair-row:last-child { border-bottom: none; }
-
-.meta-cell {
-  display: flex; flex-direction: column;
-  padding: 7px 10px; gap: 2px;
-}
-
-.meta-cell + .meta-cell {
-  border-left: 1px solid var(--border);
-}
-
-.meta-cell-label {
-  font-size: 10px; font-weight: 600;
-  color: var(--text2); text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.meta-cell-val {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px; color: var(--text);
-  word-break: break-word;
-}
-
-.card-comment {
-  font-size: 12px; font-style: italic;
-  color: var(--text2); margin-bottom: 8px;
-  padding: 8px 10px;
-  border-radius: 6px;
-  line-height: 1.5;
-}
-
-.card-comment.empty {
-  border: 1.5px dashed var(--border);
-  color: #aaa; cursor: pointer;
-}
-
+.meta-cell { display: flex; flex-direction: column; padding: 7px 10px; gap: 2px; }
+.meta-cell + .meta-cell { border-left: 1px solid var(--border); }
+.meta-cell-label { font-size: 10px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.04em; }
+.meta-cell-val { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text); word-break: break-word; }
+.card-comment { font-size: 12px; font-style: italic; color: var(--text2); margin-bottom: 8px; padding: 8px 10px; border-radius: 6px; line-height: 1.5; }
+.card-comment.empty { border: 1.5px dashed var(--border); color: #aaa; cursor: pointer; }
 .card-comment.empty:hover { border-color: var(--purple); color: var(--purple); }
-
-.card-byline {
-  font-size: 11px; color: var(--text2);
-  margin-bottom: 10px;
-}
-
-.card-actions {
-  display: flex; gap: 6px;
-  border-top: 1px solid var(--border);
-  padding-top: 10px;
-}
-
-.card-action-btn {
-  flex: 1; padding: 7px 4px;
-  border: 1.5px solid var(--border);
-  border-radius: 8px; background: none;
-  font-size: 13px; cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  font-weight: 500; color: var(--text);
-  transition: all 0.15s;
-}
-
-.card-action-btn:hover { background: var(--bg); }
+.card-byline { font-size: 11px; color: var(--text2); margin-bottom: 10px; }
+.card-actions { display: flex; gap: 6px; border-top: 1px solid var(--border); padding-top: 10px; }
+.card-action-btn { flex: 1; padding: 7px 4px; border: 1.5px solid var(--border); border-radius: 8px; background: none; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; color: var(--text); }
 .card-action-btn.del { color: var(--pink); }
-.card-action-btn.del:hover { background: #fff0f4; border-color: var(--pink); }
 
-/* ===== LIST VIEW ===== */
 #product-list { display: none; }
-
-.list-header, .list-row {
-  display: grid;
-  grid-template-columns: 60px 1fr 120px 140px 1fr 100px;
-  align-items: center;
-  gap: 12px; padding: 10px 14px;
-}
-
-.list-header {
-  font-size: 11px; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.07em;
-  color: var(--text2); border-bottom: 1.5px solid var(--border);
-}
-
-.list-row {
-  background: var(--card);
-  border-radius: 10px; margin-bottom: 6px;
-  box-shadow: 0 1px 6px rgba(13,27,42,0.06);
-  animation: cardIn 0.3s ease both;
-}
-
-.list-thumb {
-  width: 48px; height: 48px;
-  border-radius: 8px; object-fit: cover;
-  background: #f0ece4; overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px; color: var(--border);
-  flex-shrink: 0;
-}
-
+.list-header, .list-row { display: grid; grid-template-columns: 60px 1fr 120px 140px 1fr 100px; align-items: center; gap: 12px; padding: 10px 14px; }
+.list-header { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text2); border-bottom: 1.5px solid var(--border); }
+.list-row { background: var(--card); border-radius: 10px; margin-bottom: 6px; box-shadow: 0 1px 6px rgba(13,27,42,0.06); animation: cardIn 0.3s ease both; }
+.list-thumb { width: 48px; height: 48px; border-radius: 8px; background: #f0ece4; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--border); flex-shrink: 0; }
 .list-thumb img { width: 100%; height: 100%; object-fit: cover; }
-
 .list-name { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 14px; }
 .list-artist { font-size: 12px; font-style: italic; color: var(--text2); }
-
-.list-zone-badge {
-  display: inline-block;
-  padding: 3px 10px; border-radius: 12px;
-  font-size: 11px; font-weight: 600; color: #fff;
-}
-
+.list-zone-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; color: #fff; }
 .list-serial { font-family: 'DM Mono', monospace; font-size: 12px; }
 .list-location { font-size: 13px; color: var(--text2); }
-
 .list-actions { display: flex; gap: 4px; }
-.list-act-btn {
-  padding: 5px 8px; border-radius: 6px;
-  border: 1.5px solid var(--border);
-  background: none; cursor: pointer; font-size: 13px;
-  transition: background 0.15s;
-}
-.list-act-btn:hover { background: var(--bg); }
+.list-act-btn { padding: 5px 8px; border-radius: 6px; border: 1.5px solid var(--border); background: none; cursor: pointer; font-size: 13px; }
 .list-act-btn.del { color: var(--pink); }
-.list-act-btn.del:hover { background: #fff0f4; border-color: var(--pink); }
 
-/* ===== EMPTY STATE ===== */
-#empty-state {
-  display: none; text-align: center;
-  padding: 60px 20px; color: var(--text2);
-}
-
+#empty-state { display: none; text-align: center; padding: 60px 20px; color: var(--text2); }
 #empty-state .empty-icon { font-size: 52px; margin-bottom: 14px; }
 #empty-state h3 { font-family: 'Syne', sans-serif; font-size: 20px; color: var(--text); margin-bottom: 8px; }
 #empty-state p { font-size: 14px; }
 
-/* ===== MODALS ===== */
-.modal-overlay {
-  display: none;
-  position: fixed; inset: 0; z-index: 1000;
-  background: rgba(13,27,42,0.6);
-  align-items: center; justify-content: center;
-  padding: 16px;
-}
-
+.modal-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(13,27,42,0.6); align-items: center; justify-content: center; padding: 16px; }
 .modal-overlay.open { display: flex; }
-
-.modal-box {
-  background: #fff; border-radius: 20px;
-  width: 100%; max-width: 520px;
-  max-height: 90vh; overflow-y: auto;
-  box-shadow: 0 24px 80px rgba(0,0,0,0.3);
-}
-
-.modal-header {
-  background: var(--navy);
-  padding: 18px 20px;
-  display: flex; align-items: center;
-  justify-content: space-between;
-  border-radius: 20px 20px 0 0;
-  position: sticky; top: 0; z-index: 1;
-}
-
-.modal-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 17px; font-weight: 700; color: #fff;
-}
-
-.modal-close {
-  background: rgba(255,255,255,0.15);
-  border: none; color: #fff;
-  width: 32px; height: 32px; border-radius: 8px;
-  font-size: 18px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.15s;
-}
-
-.modal-close:hover { background: rgba(255,255,255,0.25); }
-
+.modal-box { background: #fff; border-radius: 20px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,0.3); }
+.modal-header { background: var(--navy); padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; border-radius: 20px 20px 0 0; position: sticky; top: 0; z-index: 1; }
+.modal-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; color: #fff; }
+.modal-close { background: rgba(255,255,255,0.15); border: none; color: #fff; width: 32px; height: 32px; border-radius: 8px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .modal-body { padding: 20px; }
-
-/* Form fields */
 .field-group { margin-bottom: 16px; }
-
-.field-label {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 12px; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.06em;
-  color: var(--text2); margin-bottom: 6px;
-}
-
-.badge-opt {
-  font-size: 10px; padding: 2px 7px; border-radius: 10px;
-  background: #d1fae5; color: #065f46;
-  font-weight: 600; text-transform: none; letter-spacing: 0;
-}
-
-.field-input, .field-textarea {
-  width: 100%; padding: 11px 14px;
-  border: 1.5px solid var(--border); border-radius: 10px;
-  font-family: 'DM Sans', sans-serif; font-size: 14px;
-  color: var(--text); background: #fafaf9; outline: none;
-  transition: border 0.2s;
-}
-
+.field-label { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text2); margin-bottom: 6px; }
+.badge-opt { font-size: 10px; padding: 2px 7px; border-radius: 10px; background: #d1fae5; color: #065f46; font-weight: 600; text-transform: none; letter-spacing: 0; }
+.field-input, .field-textarea { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); background: #fafaf9; outline: none; transition: border 0.2s; }
 .field-input:focus, .field-textarea:focus { border-color: var(--orange); }
 .field-textarea { resize: vertical; min-height: 80px; }
-
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-/* Image upload */
-#img-drop {
-  border: 2px dashed var(--border);
-  border-radius: 12px; padding: 24px;
-  text-align: center; cursor: pointer;
-  transition: all 0.2s; background: #fafaf9;
-  margin-bottom: 16px;
-}
-
-#img-drop:hover, #img-drop.drag-over {
-  border-color: var(--orange); background: #fff8f5;
-}
-
+#img-drop { border: 2px dashed var(--border); border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; background: #fafaf9; margin-bottom: 16px; }
+#img-drop:hover { border-color: var(--orange); background: #fff8f5; }
 #img-drop .drop-icon { font-size: 28px; margin-bottom: 8px; }
 #img-drop p { font-size: 13px; color: var(--text2); }
 #img-drop p strong { color: var(--orange); }
-
 #img-preview-wrap { display: none; margin-bottom: 16px; position: relative; }
-#img-preview {
-  width: 100%; max-height: 200px;
-  object-fit: cover; border-radius: 10px;
-  display: block;
-}
-
-.img-remove {
-  position: absolute; top: 8px; right: 8px;
-  background: rgba(0,0,0,0.6); color: #fff;
-  border: none; border-radius: 6px; padding: 4px 8px;
-  font-size: 12px; cursor: pointer;
-}
-
-/* Modal footer */
-.modal-footer {
-  display: flex; gap: 10px; justify-content: flex-end;
-  padding: 16px 20px; border-top: 1px solid var(--border);
-}
-
-.btn-cancel {
-  padding: 10px 20px; border-radius: 10px;
-  border: 1.5px solid var(--border); background: none;
-  font-family: 'DM Sans', sans-serif; font-size: 14px;
-  font-weight: 500; cursor: pointer; color: var(--text);
-  transition: background 0.15s;
-}
-
-.btn-cancel:hover { background: var(--bg); }
-
-.btn-save {
-  padding: 10px 24px; border-radius: 10px;
-  border: none; background: var(--orange); color: #fff;
-  font-family: 'DM Sans', sans-serif; font-size: 14px;
-  font-weight: 600; cursor: pointer; transition: opacity 0.15s;
-}
-
-.btn-save:hover { opacity: 0.9; }
-
-.btn-del {
-  padding: 10px 24px; border-radius: 10px;
-  border: none; background: var(--pink); color: #fff;
-  font-family: 'DM Sans', sans-serif; font-size: 14px;
-  font-weight: 600; cursor: pointer; transition: opacity 0.15s;
-}
-
-.btn-del:hover { opacity: 0.9; }
-
-/* Note modal header accent */
+#img-preview { width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; display: block; }
+.img-remove { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 6px; padding: 4px 8px; font-size: 12px; cursor: pointer; }
+.modal-footer { display: flex; gap: 10px; justify-content: flex-end; padding: 16px 20px; border-top: 1px solid var(--border); }
+.btn-cancel { padding: 10px 20px; border-radius: 10px; border: 1.5px solid var(--border); background: none; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; color: var(--text); }
+.btn-save { padding: 10px 24px; border-radius: 10px; border: none; background: var(--orange); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
+.btn-del { padding: 10px 24px; border-radius: 10px; border: none; background: var(--pink); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
 #note-overlay .modal-header { background: var(--purple); }
 #note-overlay .btn-save { background: var(--purple); }
-
-/* Delete modal */
 #delete-overlay .modal-header { background: var(--pink); }
-
 .del-info { padding: 20px; }
 .del-info p { font-size: 14px; color: var(--text2); line-height: 1.6; }
 .del-info strong { color: var(--text); }
-
-/* Menu overlay */
-#menu-overlay {
-  align-items: flex-start;
-  justify-content: flex-end;
-  padding: 70px 16px 0;
-}
-
-.menu-box {
-  background: #fff; border-radius: 16px;
-  width: 240px;
-  box-shadow: 0 8px 32px rgba(13,27,42,0.2);
-  overflow: hidden;
-}
-
-.menu-user {
-  padding: 20px;
-  display: flex; align-items: center; gap: 12px;
-  border-bottom: 1px solid var(--border);
-}
-
-.menu-avatar {
-  width: 44px; height: 44px; border-radius: 50%;
-  background: var(--orange); color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700;
-  flex-shrink: 0;
-}
-
+#menu-overlay { align-items: flex-start; justify-content: flex-end; padding: 70px 16px 0; }
+.menu-box { background: #fff; border-radius: 16px; width: 240px; box-shadow: 0 8px 32px rgba(13,27,42,0.2); overflow: hidden; }
+.menu-user { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
+.menu-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--orange); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; flex-shrink: 0; }
 .menu-name { font-weight: 600; font-size: 14px; }
-.menu-role { font-size: 12px; color: var(--text2); }
-
-.menu-item {
-  display: flex; align-items: center; gap: 10px;
-  width: 100%; padding: 14px 20px;
-  border: none; background: none;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px; cursor: pointer;
-  color: var(--pink); transition: background 0.15s;
-  text-align: left;
-}
-
+.menu-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 14px 20px; border: none; background: none; font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; color: var(--pink); text-align: left; }
 .menu-item:hover { background: #fff0f4; }
-
-/* ===== TOAST ===== */
-#toast {
-  position: fixed; bottom: 24px; left: 50%;
-  transform: translateX(-50%) translateY(80px);
-  background: var(--navy); color: #fff;
-  padding: 12px 24px; border-radius: 40px;
-  font-size: 13px; font-weight: 500;
-  z-index: 9999; transition: transform 0.3s ease;
-  white-space: nowrap; pointer-events: none;
-}
-
+#toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--navy); color: #fff; padding: 12px 24px; border-radius: 40px; font-size: 13px; font-weight: 500; z-index: 9999; transition: transform 0.3s ease; white-space: nowrap; pointer-events: none; }
 #toast.show { transform: translateX(-50%) translateY(0); }
 
-/* ===== RESPONSIVE ===== */
 @media (max-width: 640px) {
-  #product-grid {
-    grid-template-columns: 1fr;
-  }
-
+  #product-grid { grid-template-columns: 1fr; }
   .two-col { grid-template-columns: 1fr; }
-
   .filter-label { display: none; }
-
-  .list-header, .list-row {
-    grid-template-columns: 50px 1fr 90px;
-  }
-
-  .list-header .lh-serial,
-  .list-header .lh-loc,
-  .list-header .lh-act,
-  .list-row .lr-serial,
-  .list-row .lr-loc,
-  .list-row .lr-act { display: none; }
-
+  .list-header, .list-row { grid-template-columns: 50px 1fr 90px; }
+  .list-header .lh-serial, .list-header .lh-loc, .list-header .lh-act,
+  .list-row .lr-serial, .list-row .lr-loc, .list-row .lr-act { display: none; }
   .modal-body { padding: 14px; }
-
   #menu-overlay { padding: 64px 12px 0; }
 }
 </style>
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
 <div id="login-screen">
   <div class="login-box">
-    <div class="login-logo">🎨 Art<span>Alarm</span></div>
+    <div class="login-logo">Art<span>Alarm</span></div>
     <div class="login-sub">Inventory tracking for your collection</div>
-
     <button class="google-btn" onclick="signInWithGoogle()">
-      <svg width="18" height="18" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.93 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+      <svg width="18" height="18" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.93 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
       Sign in with Google
     </button>
-
     <div class="login-error" id="login-error"></div>
     <div class="login-checking" id="login-checking" style="display:none">
       <div class="login-spinner"></div>
-      <span>Checking access…</span>
+      <span>Signing in...</span>
     </div>
   </div>
 </div>
 
-<!-- APP -->
 <div id="app-wrap">
-
-  <!-- TOPBAR -->
   <div id="topbar">
     <div id="topbar-row1">
-      <div class="topbar-logo">🎨 Art<span>Alarm</span></div>
-      <button class="icon-btn" onclick="openMenu()">☰</button>
+      <div class="topbar-logo">Art<span>Alarm</span></div>
+      <button class="icon-btn" onclick="openMenu()">&#9776;</button>
     </div>
     <div id="topbar-row2">
-      <input id="search-input" type="search" placeholder="Search art, artist, zone, location…"
-        oninput="render()">
-      <button class="add-btn" onclick="openModal()" title="Add artwork">＋</button>
+      <input id="search-input" type="search" placeholder="Search art, artist, zone, location..." oninput="render()">
+      <button class="add-btn" onclick="openModal()">+</button>
     </div>
   </div>
-
-  <!-- MAIN -->
   <div id="main">
-    <!-- Filter bar -->
     <div id="filter-bar">
       <span class="filter-label">Zone:</span>
-      <div class="zone-chips" id="zone-chips">
-        <div class="zone-chip active" data-zone="all" onclick="setZone('all',this)">All</div>
-      </div>
+      <div class="zone-chips" id="zone-chips"></div>
       <div class="filter-right">
         <div class="view-toggle">
-          <button class="view-btn active" id="btn-grid" onclick="setView('grid')" title="Grid">⊞</button>
-          <button class="view-btn" id="btn-list" onclick="setView('list')" title="List">☰</button>
+          <button class="view-btn active" id="btn-grid" onclick="setView('grid')">Grid</button>
+          <button class="view-btn" id="btn-list" onclick="setView('list')">List</button>
         </div>
         <select class="sort-select" id="sort-select" onchange="render()">
           <option value="created">Date Added</option>
-          <option value="name">Name A–Z</option>
-          <option value="artist">Artist A–Z</option>
+          <option value="name">Name A-Z</option>
+          <option value="artist">Artist A-Z</option>
           <option value="zone" selected>Zone</option>
         </select>
       </div>
     </div>
-
-    <!-- Grids -->
     <div id="product-grid"></div>
     <div id="product-list">
       <div class="list-header">
-        <div></div>
-        <div>Artwork</div>
-        <div>Zone</div>
-        <div class="lh-serial">Serial #</div>
+        <div></div><div>Artwork</div><div>Zone</div>
+        <div class="lh-serial">Serial</div>
         <div class="lh-loc">Location</div>
         <div class="lh-act">Actions</div>
       </div>
       <div id="list-body"></div>
     </div>
     <div id="empty-state">
-      <div class="empty-icon">🖼️</div>
+      <div class="empty-icon">&#128444;</div>
       <h3>No artworks yet</h3>
-      <p>Tap the <strong>+</strong> button to add your first piece.</p>
+      <p>Tap <strong>+</strong> to add your first piece.</p>
     </div>
   </div>
-
 </div>
 
-<!-- ADD/EDIT MODAL -->
-<div class="modal-overlay" id="add-overlay"
-     onclick="if(event.target===this)closeModal()">
+<div class="modal-overlay" id="add-overlay" onclick="if(event.target===this)closeModal()">
   <div class="modal-box" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title" id="modal-title-text">Add Artwork</div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+      <button class="modal-close" onclick="closeModal()">&#10005;</button>
     </div>
     <div class="modal-body">
-      <!-- Image upload -->
-      <div id="img-drop"
-           onclick="document.getElementById('img-file').click()"
+      <div id="img-drop" onclick="document.getElementById('img-file').click()"
            ondragover="event.preventDefault();this.classList.add('drag-over')"
-           ondragleave="this.classList.remove('drag-over')"
-           ondrop="handleDrop(event)">
-        <div class="drop-icon">🖼️</div>
-        <p><strong>Click to upload</strong> or drag & drop image</p>
+           ondragleave="this.classList.remove('drag-over')" ondrop="handleDrop(event)">
+        <div class="drop-icon">&#128444;</div>
+        <p><strong>Click to upload</strong> or drag &amp; drop</p>
         <p style="font-size:11px;margin-top:4px;color:#aaa">JPG, PNG, GIF, WebP</p>
       </div>
-      <input type="file" id="img-file" accept="image/*" style="display:none"
-             onchange="handleFileInput(this)">
-
+      <input type="file" id="img-file" accept="image/*" style="display:none" onchange="handleFileInput(this)">
       <div id="img-preview-wrap">
-        <img id="img-preview" src="" alt="Preview">
-        <button class="img-remove" onclick="clearImage()">✕ Remove</button>
+        <img id="img-preview" src="" alt="">
+        <button class="img-remove" onclick="clearImage()">&#10005; Remove</button>
       </div>
-
       <div class="field-group">
         <div class="field-label">Art Name</div>
         <input class="field-input" id="f-name" type="text" placeholder="e.g. Sunset Over Harbour">
@@ -819,11 +251,11 @@ body {
       </div>
       <div class="two-col">
         <div class="field-group">
-          <div class="field-label">Zone Number <span class="badge-opt">Optional</span></div>
+          <div class="field-label">Zone <span class="badge-opt">Optional</span></div>
           <input class="field-input" id="f-zone" type="text" placeholder="e.g. Zone A">
         </div>
         <div class="field-group">
-          <div class="field-label">Serial Number <span class="badge-opt">Optional</span></div>
+          <div class="field-label">Serial <span class="badge-opt">Optional</span></div>
           <input class="field-input" id="f-serial" type="text" placeholder="e.g. SN-0042">
         </div>
       </div>
@@ -831,7 +263,7 @@ body {
         <div class="field-group">
           <div class="field-label">Transmitter <span class="badge-opt">Optional</span></div>
           <select class="field-input" id="f-transmitter" onchange="autoFillBattery()">
-            <option value="">— Select transmitter —</option>
+            <option value="">-- Select --</option>
             <option value="1101">1101</option>
             <option value="1106">1106</option>
             <option value="1107">1107</option>
@@ -841,15 +273,15 @@ body {
           <div class="field-label">Install Date <span class="badge-opt">Optional</span></div>
           <div style="display:flex;gap:6px;align-items:center">
             <input class="field-input" id="f-transmitter-date" type="text" placeholder="DD/MM/YYYY" style="flex:1;margin:0">
-            <button type="button" onclick="setTodayTransmitterDate()" style="padding:10px 10px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">Today</button>
+            <button type="button" onclick="setTodayTransmitterDate()" style="padding:10px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">Today</button>
           </div>
         </div>
       </div>
       <div class="two-col">
         <div class="field-group">
-          <div class="field-label">Battery Type <span class="badge-opt">Optional</span></div>
+          <div class="field-label">Battery <span class="badge-opt">Optional</span></div>
           <select class="field-input" id="f-battery">
-            <option value="">— Select battery —</option>
+            <option value="">-- Select --</option>
             <option value="CR2430">CR2430</option>
             <option value="CR123A">CR123A</option>
           </select>
@@ -858,16 +290,13 @@ body {
           <div class="field-label">Date Replaced <span class="badge-opt">Optional</span></div>
           <div style="display:flex;gap:6px;align-items:center">
             <input class="field-input" id="f-battery-date" type="text" placeholder="DD/MM/YYYY" style="flex:1;margin:0">
-            <button type="button" onclick="setTodayDate()" style="padding:10px 10px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">Today</button>
+            <button type="button" onclick="setTodayDate()" style="padding:10px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">Today</button>
           </div>
         </div>
       </div>
       <div class="field-group">
-        <div class="field-label">
-          Comments
-          <span class="badge-opt">Optional</span>
-        </div>
-        <textarea class="field-textarea" id="f-comments" placeholder="Condition notes, provenance, anything…"></textarea>
+        <div class="field-label">Comments <span class="badge-opt">Optional</span></div>
+        <textarea class="field-textarea" id="f-comments" placeholder="Condition notes, provenance, anything..."></textarea>
       </div>
     </div>
     <div class="modal-footer">
@@ -877,68 +306,60 @@ body {
   </div>
 </div>
 
-<!-- NOTE MODAL -->
-<div class="modal-overlay" id="note-overlay"
-     onclick="if(event.target===this)closeNote()">
+<div class="modal-overlay" id="note-overlay" onclick="if(event.target===this)closeNote()">
   <div class="modal-box" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div>
         <div class="modal-title" id="note-title">Quick Note</div>
         <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:2px" id="note-sub"></div>
       </div>
-      <button class="modal-close" onclick="closeNote()">✕</button>
+      <button class="modal-close" onclick="closeNote()">&#10005;</button>
     </div>
     <div class="modal-body">
       <div class="field-group">
-        <div class="field-label">Note / Comment</div>
-        <textarea class="field-textarea" id="note-text" rows="5" placeholder="Add a note about condition, provenance, etc."></textarea>
+        <div class="field-label">Note</div>
+        <textarea class="field-textarea" id="note-text" rows="5" placeholder="Add a note..."></textarea>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn-cancel" onclick="clearNote()">🗑 Clear</button>
-      <button class="btn-save" onclick="saveNote()">💬 Save Note</button>
+      <button class="btn-cancel" onclick="clearNote()">Clear</button>
+      <button class="btn-save" onclick="saveNote()">Save Note</button>
     </div>
   </div>
 </div>
 
-<!-- DELETE MODAL -->
-<div class="modal-overlay" id="delete-overlay"
-     onclick="if(event.target===this)closeDelete()">
+<div class="modal-overlay" id="delete-overlay" onclick="if(event.target===this)closeDelete()">
   <div class="modal-box" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title">Delete Artwork</div>
-      <button class="modal-close" onclick="closeDelete()">✕</button>
+      <button class="modal-close" onclick="closeDelete()">&#10005;</button>
     </div>
     <div class="del-info">
       <p>Are you sure you want to delete <strong id="del-name-label"></strong>? This cannot be undone.</p>
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeDelete()">Cancel</button>
-      <button class="btn-del" onclick="confirmDelete()">🗑 Delete</button>
+      <button class="btn-del" onclick="confirmDelete()">Delete</button>
     </div>
   </div>
 </div>
 
-<!-- MENU OVERLAY -->
-<div class="modal-overlay" id="menu-overlay"
-     onclick="if(event.target===this)closeMenu()">
+<div class="modal-overlay" id="menu-overlay" onclick="if(event.target===this)closeMenu()">
   <div class="menu-box" onclick="event.stopPropagation()">
     <div class="menu-user">
       <div class="menu-avatar" id="menu-avatar">?</div>
       <div>
         <div class="menu-name" id="menu-name-label"></div>
-        <div class="menu-role" id="menu-name-email" style="font-size:11px;color:var(--text2);word-break:break-all"></div>
+        <div style="font-size:11px;color:var(--text2);word-break:break-all" id="menu-name-email"></div>
       </div>
     </div>
-    <button class="menu-item" onclick="signOut()">🚪 Sign Out</button>
+    <button class="menu-item" onclick="signOut()">Sign Out</button>
   </div>
 </div>
 
-<!-- TOAST -->
 <div id="toast"></div>
 
 <script>
-// ====== STATE ======
 var currentUser = '';
 var currentUserEmail = '';
 var db = null;
@@ -952,39 +373,33 @@ var noteId = null;
 var currentImage = null;
 var unsubscribe = null;
 
-function getZoneColor(zone) {
-  return '#ff5c1a';
-}
+function getZoneColor() { return '#ff5c1a'; }
 
-// ====== LOGIN ======
 function signInWithGoogle() {
   var provider = new firebase.auth.GoogleAuthProvider();
-  var errEl = document.getElementById('login-error');
-  var checkEl = document.getElementById('login-checking');
-  errEl.style.display = 'none';
+  document.getElementById('login-error').style.display = 'none';
   auth.signInWithPopup(provider).catch(function(e) {
-    errEl.textContent = 'Sign-in failed. Please try again.';
-    errEl.style.display = 'block';
-    checkEl.style.display = 'none';
+    var el = document.getElementById('login-error');
+    el.textContent = 'Sign-in failed. Please try again.';
+    el.style.display = 'block';
+    document.getElementById('login-checking').style.display = 'none';
   });
 }
 
-function showErr(el, msg) {
+function showLoginError(msg) {
+  var el = document.getElementById('login-error');
   el.textContent = msg;
   el.style.display = 'block';
-}
-
-function showLoginError(msg) {
-  var errEl = document.getElementById('login-error');
-  var checkEl = document.getElementById('login-checking');
-  errEl.textContent = msg;
-  errEl.style.display = 'block';
-  checkEl.style.display = 'none';
+  document.getElementById('login-checking').style.display = 'none';
   auth.signOut();
 }
 
-// ====== FIREBASE ======
-function initFirebase() {
+function signOut() {
+  closeMenu();
+  auth.signOut();
+}
+
+(function() {
   var config = {
     apiKey: "AIzaSyCdyN3sbboJfIWDUX4HjOy9yU-9JHY67CY",
     authDomain: "art-alarm-bc506.firebaseapp.com",
@@ -993,29 +408,24 @@ function initFirebase() {
     messagingSenderId: "950999882698",
     appId: "1:950999882698:web:a6751938a6d31c52228d33"
   };
-  if (!firebase.apps.length) {
-    firebase.initializeApp(config);
-  }
+  firebase.initializeApp(config);
   db = firebase.firestore();
   auth = firebase.auth();
 
-  // Listen for auth state changes — this is the secure session handler
   auth.onAuthStateChanged(function(user) {
     var errEl = document.getElementById('login-error');
     var checkEl = document.getElementById('login-checking');
     if (user) {
-      // Show the email so we know auth worked
       checkEl.style.display = 'flex';
-
-      var email = user.email.toLowerCase();
+      errEl.style.display = 'none';
       user.getIdTokenResult().then(function() {
         currentUser = user.displayName || user.email;
-        currentUserEmail = email;
+        currentUserEmail = user.email.toLowerCase();
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('app-wrap').style.display = 'block';
         startApp();
       }).catch(function(e) {
-        showLoginError('Authentication error: ' + e.message);
+        showLoginError('Auth error: ' + e.message);
       });
     } else {
       if (unsubscribe) { unsubscribe(); unsubscribe = null; }
@@ -1028,47 +438,34 @@ function initFirebase() {
       checkEl.style.display = 'none';
     }
   });
-}
+})();
 
 function startApp() {
-  updateMenuUser();
-
+  document.getElementById('menu-name-label').textContent = currentUser;
+  document.getElementById('menu-name-email').textContent = currentUserEmail;
+  document.getElementById('menu-avatar').textContent = currentUser.charAt(0).toUpperCase();
   if (unsubscribe) unsubscribe();
   unsubscribe = db.collection('products').orderBy('created','asc').onSnapshot(function(snap) {
     products = [];
-    snap.forEach(function(doc) {
-      var d = doc.data();
-      d.id = doc.id;
-      products.push(d);
-    });
+    snap.forEach(function(doc) { var d = doc.data(); d.id = doc.id; products.push(d); });
     render();
-  }, function(err) {
-    console.error('Firestore error:', err);
-    showToast('⚠️ Sync error — check connection');
-  });
+  }, function() { showToast('Sync error'); });
 }
 
-// ====== RENDER ======
 function render() {
   var query = (document.getElementById('search-input').value || '').toLowerCase();
   var sortBy = document.getElementById('sort-select').value || 'zone';
-
   var filtered = products.filter(function(p) {
     var hasZone = p.zone && p.zone.trim() !== '';
-    if (activeZone === 'all') {
-      if (!hasZone) return false;
-    } else if (activeZone === 'unzoned') {
-      if (hasZone) return false;
-    } else {
-      if (p.zone !== activeZone) return false;
-    }
+    if (activeZone === 'all') { if (!hasZone) return false; }
+    else if (activeZone === 'unzoned') { if (hasZone) return false; }
+    else { if (p.zone !== activeZone) return false; }
     if (query) {
       var hay = ((p.name||'') + ' ' + (p.artist||'') + ' ' + (p.zone||'') + ' ' + (p.serial||'') + ' ' + (p.location||'')).toLowerCase();
       if (hay.indexOf(query) === -1) return false;
     }
     return true;
   });
-
   filtered.sort(function(a, b) {
     if (activeZone === 'unzoned') return (a.name||'').localeCompare(b.name||'');
     if (sortBy === 'name') return (a.name||'').localeCompare(b.name||'');
@@ -1076,158 +473,86 @@ function render() {
     if (sortBy === 'zone') return (a.zone||'').localeCompare(b.zone||'');
     return (a.created||0) - (b.created||0);
   });
-
   renderZoneChips();
   renderGrid(filtered);
   renderList(filtered);
-
-  var empty = document.getElementById('empty-state');
-  if (filtered.length === 0) {
-    empty.style.display = 'block';
-  } else {
-    empty.style.display = 'none';
-  }
+  document.getElementById('empty-state').style.display = filtered.length === 0 ? 'block' : 'none';
 }
 
 function renderZoneChips() {
   var zones = [];
-  products.forEach(function(p) {
-    if (p.zone && zones.indexOf(p.zone) === -1) zones.push(p.zone);
-  });
+  products.forEach(function(p) { if (p.zone && p.zone.trim() !== '' && zones.indexOf(p.zone) === -1) zones.push(p.zone); });
   zones.sort(function(a, b) {
-    var numA = parseFloat(a.replace(/[^0-9.]/g, ''));
-    var numB = parseFloat(b.replace(/[^0-9.]/g, ''));
-    if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+    var nA = parseFloat(a.replace(/[^0-9.]/g,'')), nB = parseFloat(b.replace(/[^0-9.]/g,''));
+    if (!isNaN(nA) && !isNaN(nB)) return nA - nB;
     return a.localeCompare(b);
   });
-
-  var container = document.getElementById('zone-chips');
-  var allChip = '<div class="zone-chip' + (activeZone==='all'?' active':'') +
-    '" data-zone="all" onclick="setZone(\'all\',this)">All</div>';
-
-  var zoneHtml = zones.map(function(z) {
-    var col = getZoneColor(z);
-    var active = activeZone === z;
-    var style = active ? 'background:' + col + ';border-color:' + col + ';color:#fff' : '';
-    return '<div class="zone-chip' + (active?' active':'') + '" data-zone="' + esc(z) +
-      '" style="' + style + '" onclick="setZone(\'' + esc(z).replace(/'/g,"\\'") + '\',this)">' + esc(z) + '</div>';
-  }).join('');
-
-  var unzonedCount = products.filter(function(p){ return !p.zone || p.zone.trim() === ''; }).length;
-  var unzonedChip = unzonedCount > 0
-    ? '<div class="zone-chip' + (activeZone === 'unzoned' ? ' active' : '') +
-      '" data-zone="unzoned" onclick="setZone('unzoned',this)" style="' +
-      (activeZone === 'unzoned' ? 'background:var(--text2);border-color:var(--text2);color:#fff' : '') +
-      '">Unzoned (' + unzonedCount + ')</div>'
-    : '';
-  container.innerHTML = allChip + zoneHtml + unzonedChip;
-
-  // Re-apply active style to "all" chip
-  if (activeZone === 'all') {
-    var allEl = container.querySelector('[data-zone="all"]');
-    if (allEl) {
-      allEl.style.background = var_('--navy');
-      allEl.style.color = '#fff';
-      allEl.style.borderColor = var_('--navy');
-    }
-  }
+  var html = chipHtml('All', 'all', activeZone === 'all', '#0d1b2a');
+  zones.forEach(function(z) { html += chipHtml(esc(z), z, activeZone === z, '#ff5c1a'); });
+  var uCount = products.filter(function(p){ return !p.zone || p.zone.trim() === ''; }).length;
+  if (uCount > 0) html += chipHtml('Unzoned (' + uCount + ')', 'unzoned', activeZone === 'unzoned', '#5a6478');
+  document.getElementById('zone-chips').innerHTML = html;
 }
 
-function var_(name) {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+function chipHtml(label, zone, active, color) {
+  var safeZone = zone.replace(/'/g, "\\'");
+  return '<div class="zone-chip" onclick="setZone(\'' + safeZone + '\')" style="' + (active ? 'background:' + color + ';border-color:' + color + ';color:#fff' : '') + '">' + label + '</div>';
 }
 
 function renderGrid(items) {
   var grid = document.getElementById('product-grid');
   if (currentView !== 'grid') { grid.style.display = 'none'; return; }
   grid.style.display = 'grid';
-
   grid.innerHTML = items.map(function(p, i) {
-    var col = getZoneColor(p.zone || '');
-    var imgHtml = p.image
-      ? '<img src="' + p.image + '" alt="' + esc(p.name) + '">'
-      : '<div class="card-no-img">🖼️</div>';
+    var col = getZoneColor();
+    var imgHtml = p.image ? '<img src="' + p.image + '" alt="">' : '<div class="card-no-img">&#128444;</div>';
     var commentClass = p.comments ? 'card-comment' : 'card-comment empty';
-    var commentText = p.comments ? esc(p.comments) : '+ Add a note…';
+    var commentText = p.comments ? esc(p.comments) : '+ Add a note...';
     var commentClick = p.comments ? '' : 'onclick="openNote(\'' + p.id + '\')"';
-    var byline = p.editedBy ? '<div class="card-byline">Edited by ' + esc(p.editedBy) + ' · ' + timeAgo(p.editedAt) + '</div>' : '';
-
-    var zoneHtml = p.zone
-      ? '<div class="card-zone-block" style="border-color:' + col + '">' +
-          '<div class="card-zone-label">ZONE</div>' +
-          '<div class="card-zone-val" style="color:' + col + '">' + esc(p.zone) + '</div>' +
-        '</div>'
-      : '';
-
+    var byline = p.editedBy ? '<div class="card-byline">Edited by ' + esc(p.editedBy) + ' - ' + timeAgo(p.editedAt) + '</div>' : '';
+    var zoneHtml = p.zone ? '<div class="card-zone-block" style="border-color:' + col + '"><div class="card-zone-label">ZONE</div><div class="card-zone-val" style="color:' + col + '">' + esc(p.zone) + '</div></div>' : '';
     return '<div class="card" style="animation-delay:' + (i*0.05) + 's">' +
       '<div class="card-img-wrap">' + imgHtml + '</div>' +
       '<div class="card-body">' +
-        '<div class="card-title-row">' +
-          '<div style="flex:1;min-width:0">' +
-            '<div class="card-name">' + esc(p.name||'') + '</div>' +
-            '<div class="card-artist">by ' + esc(p.artist||'') + '</div>' +
-          '</div>' +
-          zoneHtml +
-        '</div>' +
+        '<div class="card-title-row"><div style="flex:1;min-width:0"><div class="card-name">' + esc(p.name||'') + '</div><div class="card-artist">by ' + esc(p.artist||'') + '</div></div>' + zoneHtml + '</div>' +
         '<div class="card-meta">' +
-          '<div class="meta-pair-row">' +
-            '<div class="meta-cell"><span class="meta-cell-label">🔢 Serial</span><span class="meta-cell-val">' + esc(p.serial||'—') + '</span></div>' +
-            '<div class="meta-cell"><span class="meta-cell-label">📍 Location</span><span class="meta-cell-val">' + esc(p.location||'—') + '</span></div>' +
-          '</div>' +
-          '<div class="meta-pair-row">' +
-            '<div class="meta-cell"><span class="meta-cell-label">📡 Transmitter</span><span class="meta-cell-val">' + esc(p.transmitter||'—') + '</span></div>' +
-            '<div class="meta-cell"><span class="meta-cell-label">📅 Installed</span><span class="meta-cell-val">' + esc(p.transmitterDate||'—') + '</span></div>' +
-          '</div>' +
-          '<div class="meta-pair-row">' +
-            '<div class="meta-cell"><span class="meta-cell-label">🔋 Battery</span><span class="meta-cell-val">' + esc(p.battery||'—') + '</span></div>' +
-            '<div class="meta-cell"><span class="meta-cell-label">📅 Replaced</span><span class="meta-cell-val">' + esc(p.batteryDate||'—') + '</span></div>' +
-          '</div>' +
+          '<div class="meta-pair-row"><div class="meta-cell"><span class="meta-cell-label">Serial</span><span class="meta-cell-val">' + esc(p.serial||'-') + '</span></div><div class="meta-cell"><span class="meta-cell-label">Location</span><span class="meta-cell-val">' + esc(p.location||'-') + '</span></div></div>' +
+          '<div class="meta-pair-row"><div class="meta-cell"><span class="meta-cell-label">Transmitter</span><span class="meta-cell-val">' + esc(p.transmitter||'-') + '</span></div><div class="meta-cell"><span class="meta-cell-label">Installed</span><span class="meta-cell-val">' + esc(p.transmitterDate||'-') + '</span></div></div>' +
+          '<div class="meta-pair-row"><div class="meta-cell"><span class="meta-cell-label">Battery</span><span class="meta-cell-val">' + esc(p.battery||'-') + '</span></div><div class="meta-cell"><span class="meta-cell-label">Replaced</span><span class="meta-cell-val">' + esc(p.batteryDate||'-') + '</span></div></div>' +
         '</div>' +
         '<div class="' + commentClass + '" ' + commentClick + '>' + commentText + '</div>' +
         byline +
         '<div class="card-actions">' +
-          '<button class="card-action-btn" onclick="editProduct(\'' + p.id + '\')">✏️ Edit</button>' +
-          '<button class="card-action-btn" onclick="openNote(\'' + p.id + '\')">💬 Note</button>' +
-          '<button class="card-action-btn del" onclick="openDelete(\'' + p.id + '\')">🗑️ Delete</button>' +
+          '<button class="card-action-btn" onclick="editProduct(\'' + p.id + '\')">Edit</button>' +
+          '<button class="card-action-btn" onclick="openNote(\'' + p.id + '\')">Note</button>' +
+          '<button class="card-action-btn del" onclick="openDelete(\'' + p.id + '\')">Delete</button>' +
         '</div>' +
-      '</div>' +
-    '</div>';
+      '</div></div>';
   }).join('');
 }
 
 function renderList(items) {
   var list = document.getElementById('product-list');
-  var body = document.getElementById('list-body');
   if (currentView !== 'list') { list.style.display = 'none'; return; }
   list.style.display = 'block';
-
-  body.innerHTML = items.map(function(p, i) {
-    var col = getZoneColor(p.zone || '');
-    var thumbHtml = p.image
-      ? '<div class="list-thumb"><img src="' + p.image + '" alt=""></div>'
-      : '<div class="list-thumb">🖼️</div>';
-
+  document.getElementById('list-body').innerHTML = items.map(function(p, i) {
+    var col = getZoneColor();
+    var thumb = p.image ? '<div class="list-thumb"><img src="' + p.image + '" alt=""></div>' : '<div class="list-thumb">&#128444;</div>';
     return '<div class="list-row" style="animation-delay:' + (i*0.04) + 's">' +
-      thumbHtml +
+      thumb +
       '<div><div class="list-name">' + esc(p.name||'') + '</div><div class="list-artist">by ' + esc(p.artist||'') + '</div></div>' +
       '<div><span class="list-zone-badge" style="background:' + col + '">' + esc(p.zone||'') + '</span></div>' +
       '<div class="list-serial lr-serial">' + esc(p.serial||'') + '</div>' +
       '<div class="list-location lr-loc">' + esc(p.location||'') + '</div>' +
       '<div class="list-actions lr-act">' +
-        '<button class="list-act-btn" onclick="editProduct(\'' + p.id + '\')" title="Edit">✏️</button>' +
-        '<button class="list-act-btn" onclick="openNote(\'' + p.id + '\')" title="Note">💬</button>' +
-        '<button class="list-act-btn del" onclick="openDelete(\'' + p.id + '\')" title="Delete">🗑️</button>' +
-      '</div>' +
-    '</div>';
+        '<button class="list-act-btn" onclick="editProduct(\'' + p.id + '\')">Edit</button>' +
+        '<button class="list-act-btn" onclick="openNote(\'' + p.id + '\')">Note</button>' +
+        '<button class="list-act-btn del" onclick="openDelete(\'' + p.id + '\')">Del</button>' +
+      '</div></div>';
   }).join('');
 }
 
-// ====== ZONE / VIEW / SORT ======
-function setZone(zone, el) {
-  activeZone = zone;
-  render();
-}
-
+function setZone(zone) { activeZone = zone; render(); }
 function setView(v) {
   currentView = v;
   document.getElementById('btn-grid').classList.toggle('active', v==='grid');
@@ -1235,30 +560,11 @@ function setView(v) {
   render();
 }
 
-// ====== ADD/EDIT MODAL ======
-function openModal() {
-  editingId = null;
-  currentImage = null;
-  clearForm();
-  document.getElementById('modal-title-text').textContent = 'Add Artwork';
-  document.getElementById('add-overlay').classList.add('open');
-}
-
-function closeModal() {
-  document.getElementById('add-overlay').classList.remove('open');
-}
+function openModal() { editingId = null; currentImage = null; clearForm(); document.getElementById('modal-title-text').textContent = 'Add Artwork'; document.getElementById('add-overlay').classList.add('open'); }
+function closeModal() { document.getElementById('add-overlay').classList.remove('open'); }
 
 function clearForm() {
-  document.getElementById('f-name').value = '';
-  document.getElementById('f-artist').value = '';
-  document.getElementById('f-zone').value = '';
-  document.getElementById('f-serial').value = '';
-  document.getElementById('f-transmitter').value = '';
-  document.getElementById('f-transmitter-date').value = '';
-  document.getElementById('f-battery').value = '';
-  document.getElementById('f-battery-date').value = '';
-  document.getElementById('f-location').value = '';
-  document.getElementById('f-comments').value = '';
+  ['f-name','f-artist','f-zone','f-serial','f-location','f-comments','f-transmitter','f-transmitter-date','f-battery','f-battery-date'].forEach(function(id){ document.getElementById(id).value = ''; });
   document.getElementById('img-file').value = '';
   currentImage = null;
   document.getElementById('img-drop').style.display = 'block';
@@ -1269,259 +575,101 @@ function clearForm() {
 function editProduct(id) {
   var p = products.find(function(x){ return x.id === id; });
   if (!p) return;
-  editingId = id;
-  currentImage = p.image || null;
+  editingId = id; currentImage = p.image || null;
   document.getElementById('modal-title-text').textContent = 'Edit Artwork';
-  document.getElementById('f-name').value = p.name || '';
-  document.getElementById('f-artist').value = p.artist || '';
-  document.getElementById('f-zone').value = p.zone || '';
-  document.getElementById('f-serial').value = p.serial || '';
-  document.getElementById('f-transmitter').value = p.transmitter || '';
-  document.getElementById('f-transmitter-date').value = p.transmitterDate || '';
-  document.getElementById('f-battery').value = p.battery || '';
-  document.getElementById('f-battery-date').value = p.batteryDate || '';
-  document.getElementById('f-location').value = p.location || '';
-  document.getElementById('f-comments').value = p.comments || '';
-
-  if (p.image) {
-    document.getElementById('img-drop').style.display = 'none';
-    document.getElementById('img-preview-wrap').style.display = 'block';
-    document.getElementById('img-preview').src = p.image;
-  } else {
-    document.getElementById('img-drop').style.display = 'block';
-    document.getElementById('img-preview-wrap').style.display = 'none';
-  }
-
+  document.getElementById('f-name').value = p.name||'';
+  document.getElementById('f-artist').value = p.artist||'';
+  document.getElementById('f-zone').value = p.zone||'';
+  document.getElementById('f-serial').value = p.serial||'';
+  document.getElementById('f-location').value = p.location||'';
+  document.getElementById('f-comments').value = p.comments||'';
+  document.getElementById('f-transmitter').value = p.transmitter||'';
+  document.getElementById('f-transmitter-date').value = p.transmitterDate||'';
+  document.getElementById('f-battery').value = p.battery||'';
+  document.getElementById('f-battery-date').value = p.batteryDate||'';
+  if (p.image) { document.getElementById('img-drop').style.display='none'; document.getElementById('img-preview-wrap').style.display='block'; document.getElementById('img-preview').src=p.image; }
+  else { document.getElementById('img-drop').style.display='block'; document.getElementById('img-preview-wrap').style.display='none'; }
   document.getElementById('add-overlay').classList.add('open');
 }
 
 function saveProduct() {
-  var name     = document.getElementById('f-name').value.trim();
-  var artist   = document.getElementById('f-artist').value.trim();
-  var zone     = document.getElementById('f-zone').value.trim();
-  var serial   = document.getElementById('f-serial').value.trim();
+  var name = document.getElementById('f-name').value.trim();
+  var artist = document.getElementById('f-artist').value.trim();
   var location = document.getElementById('f-location').value.trim();
-  var comments = document.getElementById('f-comments').value.trim();
-  var transmitter = document.getElementById('f-transmitter').value;
-  var transmitterDate = document.getElementById('f-transmitter-date').value.trim();
-  var battery = document.getElementById('f-battery').value;
-  var batteryDate = document.getElementById('f-battery-date').value.trim();
-
-  if (!name || !artist || !location) {
-    showToast('⚠️ Please fill all required fields');
-    return;
-  }
-
+  if (!name || !artist || !location) { showToast('Please fill all required fields'); return; }
   var now = Date.now();
   var data = {
-    name: name, artist: artist, zone: zone,
-    serial: serial, location: location,
-    comments: comments,
-    transmitter: transmitter, transmitterDate: transmitterDate,
-    battery: battery, batteryDate: batteryDate,
+    name: name, artist: artist,
+    zone: document.getElementById('f-zone').value.trim(),
+    serial: document.getElementById('f-serial').value.trim(),
+    location: location,
+    comments: document.getElementById('f-comments').value.trim(),
+    transmitter: document.getElementById('f-transmitter').value,
+    transmitterDate: document.getElementById('f-transmitter-date').value.trim(),
+    battery: document.getElementById('f-battery').value,
+    batteryDate: document.getElementById('f-battery-date').value.trim(),
     image: currentImage || null,
-    editedBy: currentUser,
-    editedAt: now
+    editedBy: currentUser, editedAt: now
   };
-
   if (editingId) {
-    db.collection('products').doc(editingId).update(data).then(function() {
-      showToast('✅ Artwork updated');
-    }).catch(function(e){ showToast('❌ Error: ' + e.message); });
+    db.collection('products').doc(editingId).update(data).then(function(){ showToast('Artwork updated'); }).catch(function(e){ showToast('Error: '+e.message); });
   } else {
     data.created = now;
-    db.collection('products').add(data).then(function() {
-      showToast('✅ Artwork added');
-    }).catch(function(e){ showToast('❌ Error: ' + e.message); });
+    db.collection('products').add(data).then(function(){ showToast('Artwork added'); }).catch(function(e){ showToast('Error: '+e.message); });
   }
   closeModal();
 }
 
-// ====== IMAGE HANDLING ======
-function handleDrop(event) {
-  event.preventDefault();
-  document.getElementById('img-drop').classList.remove('drag-over');
-  var file = event.dataTransfer.files[0];
-  if (file) processImageFile(file);
-}
-
-function handleFileInput(input) {
-  var file = input.files[0];
-  if (file) processImageFile(file);
-}
-
+function handleDrop(e) { e.preventDefault(); document.getElementById('img-drop').classList.remove('drag-over'); var f=e.dataTransfer.files[0]; if(f) processImageFile(f); }
+function handleFileInput(input) { if(input.files[0]) processImageFile(input.files[0]); }
 function processImageFile(file) {
-  var filename = file.name;
+  var fn = file.name;
   var reader = new FileReader();
   reader.onload = function(e) {
     currentImage = e.target.result;
     document.getElementById('img-preview').src = currentImage;
     document.getElementById('img-drop').style.display = 'none';
     document.getElementById('img-preview-wrap').style.display = 'block';
-    autoFillFromFilename(filename);
+    autoFillFromFilename(fn);
   };
   reader.readAsDataURL(file);
 }
-
-function clearImage() {
-  currentImage = null;
-  document.getElementById('img-preview').src = '';
-  document.getElementById('img-preview-wrap').style.display = 'none';
-  document.getElementById('img-drop').style.display = 'block';
-  document.getElementById('img-file').value = '';
+function clearImage() { currentImage=null; document.getElementById('img-preview').src=''; document.getElementById('img-preview-wrap').style.display='none'; document.getElementById('img-drop').style.display='block'; document.getElementById('img-file').value=''; }
+function autoFillFromFilename(fn) {
+  var base = fn.replace(/\.[^.]+$/,'').replace(/[-_]/g,' ').trim();
+  var m = base.match(/^(.+?)\s+by\s+(.+)$/i);
+  var nf=document.getElementById('f-name'), af=document.getElementById('f-artist');
+  if (m) { if(!nf.value.trim()) nf.value=toTitleCase(m[1].trim()); if(!af.value.trim()) af.value=toTitleCase(m[2].trim()); }
+  else { if(!nf.value.trim()) nf.value=toTitleCase(base); }
 }
-
-function autoFillFromFilename(filename) {
-  var base = filename.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ').trim();
-  var byMatch = base.match(/^(.+?)\s+by\s+(.+)$/i);
-
-  var nameField   = document.getElementById('f-name');
-  var artistField = document.getElementById('f-artist');
-
-  if (byMatch) {
-    if (!nameField.value.trim())   nameField.value   = toTitleCase(byMatch[1].trim());
-    if (!artistField.value.trim()) artistField.value = toTitleCase(byMatch[2].trim());
-  } else {
-    if (!nameField.value.trim())   nameField.value   = toTitleCase(base);
-  }
-}
-
-function toTitleCase(str) {
-  return str.replace(/\b\w/g, function(c){ return c.toUpperCase(); });
-}
+function toTitleCase(s) { return s.replace(/\b\w/g,function(c){return c.toUpperCase();}); }
 
 function autoFillBattery() {
-  var t = document.getElementById('f-transmitter').value;
-  var b = document.getElementById('f-battery');
-  if (t === '1101' || t === '1106') {
-    b.value = 'CR123A';
-  } else if (t === '1107') {
-    b.value = 'CR2430';
-  }
+  var t=document.getElementById('f-transmitter').value, b=document.getElementById('f-battery');
+  if(t==='1101'||t==='1106') b.value='CR123A';
+  else if(t==='1107') b.value='CR2430';
 }
+function pad(n){return String(n).padStart(2,'0');}
+function setTodayTransmitterDate() { var d=new Date(); document.getElementById('f-transmitter-date').value=pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear(); }
+function setTodayDate() { var d=new Date(); document.getElementById('f-battery-date').value=pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear(); }
 
-function setTodayTransmitterDate() {
-  var d = new Date();
-  var day   = String(d.getDate()).padStart(2,'0');
-  var month = String(d.getMonth()+1).padStart(2,'0');
-  var year  = d.getFullYear();
-  document.getElementById('f-transmitter-date').value = day + '/' + month + '/' + year;
-}
+function openNote(id) { var p=products.find(function(x){return x.id===id;}); if(!p) return; noteId=id; document.getElementById('note-title').textContent=p.name||'Note'; document.getElementById('note-sub').textContent='by '+(p.artist||''); document.getElementById('note-text').value=p.comments||''; document.getElementById('note-overlay').classList.add('open'); }
+function closeNote() { document.getElementById('note-overlay').classList.remove('open'); }
+function clearNote() { document.getElementById('note-text').value=''; }
+function saveNote() { if(!noteId) return; var text=document.getElementById('note-text').value.trim(); db.collection('products').doc(noteId).update({comments:text,editedBy:currentUser,editedAt:Date.now()}).then(function(){showToast('Note saved');}).catch(function(e){showToast('Error: '+e.message);}); closeNote(); }
 
-function setTodayDate() {
-  var d = new Date();
-  var day   = String(d.getDate()).padStart(2,'0');
-  var month = String(d.getMonth()+1).padStart(2,'0');
-  var year  = d.getFullYear();
-  document.getElementById('f-battery-date').value = day + '/' + month + '/' + year;
-}
+function openDelete(id) { var p=products.find(function(x){return x.id===id;}); if(!p) return; deletingId=id; document.getElementById('del-name-label').textContent=p.name||'this artwork'; document.getElementById('delete-overlay').classList.add('open'); }
+function closeDelete() { document.getElementById('delete-overlay').classList.remove('open'); }
+function confirmDelete() { if(!deletingId) return; db.collection('products').doc(deletingId).delete().then(function(){showToast('Artwork deleted');}).catch(function(e){showToast('Error: '+e.message);}); closeDelete(); }
 
-// ====== NOTE MODAL ======
-function openNote(id) {
-  var p = products.find(function(x){ return x.id === id; });
-  if (!p) return;
-  noteId = id;
-  document.getElementById('note-title').textContent = p.name || 'Note';
-  document.getElementById('note-sub').textContent = 'by ' + (p.artist || '');
-  document.getElementById('note-text').value = p.comments || '';
-  document.getElementById('note-overlay').classList.add('open');
-}
+function openMenu() { document.getElementById('menu-overlay').classList.add('open'); }
+function closeMenu() { document.getElementById('menu-overlay').classList.remove('open'); }
 
-function closeNote() {
-  document.getElementById('note-overlay').classList.remove('open');
-}
+var toastTimer=null;
+function showToast(msg) { var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); if(toastTimer) clearTimeout(toastTimer); toastTimer=setTimeout(function(){t.classList.remove('show');},2800); }
 
-function clearNote() {
-  document.getElementById('note-text').value = '';
-}
-
-function saveNote() {
-  if (!noteId) return;
-  var text = document.getElementById('note-text').value.trim();
-  db.collection('products').doc(noteId).update({
-    comments: text,
-    editedBy: currentUser,
-    editedAt: Date.now()
-  }).then(function(){
-    showToast('💬 Note saved');
-  }).catch(function(e){ showToast('❌ Error: ' + e.message); });
-  closeNote();
-}
-
-// ====== DELETE MODAL ======
-function openDelete(id) {
-  var p = products.find(function(x){ return x.id === id; });
-  if (!p) return;
-  deletingId = id;
-  document.getElementById('del-name-label').textContent = p.name || 'this artwork';
-  document.getElementById('delete-overlay').classList.add('open');
-}
-
-function closeDelete() {
-  document.getElementById('delete-overlay').classList.remove('open');
-}
-
-function confirmDelete() {
-  if (!deletingId) return;
-  db.collection('products').doc(deletingId).delete().then(function(){
-    showToast('🗑️ Artwork deleted');
-  }).catch(function(e){ showToast('❌ Error: ' + e.message); });
-  closeDelete();
-}
-
-// ====== MENU ======
-function openMenu() {
-  document.getElementById('menu-overlay').classList.add('open');
-}
-
-function closeMenu() {
-  document.getElementById('menu-overlay').classList.remove('open');
-}
-
-function updateMenuUser() {
-  document.getElementById('menu-name-label').textContent = currentUser;
-  document.getElementById('menu-name-email').textContent = currentUserEmail;
-  document.getElementById('menu-avatar').textContent = currentUser.charAt(0).toUpperCase();
-}
-
-function signOut() {
-  closeMenu();
-  auth.signOut(); // onAuthStateChanged handles the rest
-}
-
-// ====== TOAST ======
-var toastTimer = null;
-function showToast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2800);
-}
-
-// ====== HELPERS ======
-function esc(str) {
-  return String(str||'')
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;')
-    .replace(/'/g,'&#39;');
-}
-
-function timeAgo(ts) {
-  if (!ts) return '';
-  var diff = Date.now() - ts;
-  var mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return mins + 'm ago';
-  var hrs = Math.floor(mins / 60);
-  if (hrs < 24) return hrs + 'h ago';
-  return Math.floor(hrs/24) + 'd ago';
-}
-
-
-// ====== INIT ======
-(function init() {
-  initFirebase();
-})();
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function timeAgo(ts) { if(!ts) return ''; var d=Date.now()-ts,m=Math.floor(d/60000); if(m<1) return 'just now'; if(m<60) return m+'m ago'; var h=Math.floor(m/60); if(h<24) return h+'h ago'; return Math.floor(h/24)+'d ago'; }
+</script>
+</body>
+</html>
