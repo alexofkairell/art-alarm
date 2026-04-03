@@ -1005,6 +1005,8 @@ function initFirebase() {
     var checkEl = document.getElementById('login-checking');
     if (user) {
       // Show the email so we know auth worked
+      errEl.textContent = '✅ Signed in as: ' + user.email + ' — checking access...';
+      errEl.style.display = 'block';
       checkEl.style.display = 'flex';
 
       var email = user.email.toLowerCase();
@@ -1529,6 +1531,8 @@ function timeAgo(ts) {
     var errEl = document.getElementById('login-error');
     var checkEl = document.getElementById('login-checking');
     if (user) {
+      errEl.textContent = '✅ Signed in as: ' + user.email + ' — checking access...';
+      errEl.style.display = 'block';
       checkEl.style.display = 'flex';
 
       var email = user.email.toLowerCase();
