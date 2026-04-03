@@ -1005,8 +1005,6 @@ function initFirebase() {
     var checkEl = document.getElementById('login-checking');
     if (user) {
       // Show the email so we know auth worked
-      errEl.textContent = '✅ Signed in as: ' + user.email + ' — checking access...';
-      errEl.style.display = 'block';
       checkEl.style.display = 'flex';
 
       var email = user.email.toLowerCase();
@@ -1522,21 +1520,8 @@ function timeAgo(ts) {
   return Math.floor(hrs/24) + 'd ago';
 }
 
+
 // ====== INIT ======
 (function init() {
-  // Initialise Firebase immediately at page load
-  var config = {
-    apiKey: "AIzaSyCdyN3sbboJfIWDUX4HjOy9yU-9JHY67CY",
-    authDomain: "art-alarm-bc506.firebaseapp.com",
-    projectId: "art-alarm-bc506",
-    storageBucket: "art-alarm-bc506.firebasestorage.app",
-    messagingSenderId: "950999882698",
-    appId: "1:950999882698:web:a6751938a6d31c52228d33"
-  };
-  if (!firebase.apps.length) {
-    firebase.initializeApp(config);
-  }
-  db = firebase.firestore();
-  auth = firebase.auth();
-
+  initFirebase();
 })();
