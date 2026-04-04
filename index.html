@@ -229,7 +229,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .maint-row-due { flex-shrink: 0; text-align: right; }
 .maint-due-date { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: var(--text2); }
 .maint-due-days { font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 600; margin-top: 2px; }
-.status-overdue { background: #ff477e; }
+.status-overdue { background: #e53e3e; }
 .status-soon    { background: #f59e0b; }
 .status-ok      { background: #10b981; }
 .status-unknown { background: #d1d5db; }
@@ -569,10 +569,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
         <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text2)">Filter:</span>
         <div id="maint-filter-btns" style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="maint-filter-btn active" onclick="setMaintFilter('all')">All</button>
-          <button class="maint-filter-btn" onclick="setMaintFilter('overdue')">🔴 Overdue</button>
-          <button class="maint-filter-btn" onclick="setMaintFilter('soon')">🟡 Due Soon</button>
-          <button class="maint-filter-btn" onclick="setMaintFilter('ok')">🟢 OK</button>
-          <button class="maint-filter-btn" onclick="setMaintFilter('unknown')">⚪ No Date</button>
+          <button class="maint-filter-btn" onclick="setMaintFilter('overdue')" style="color:#e53e3e;border-color:#e53e3e">Overdue</button>
+          <button class="maint-filter-btn" onclick="setMaintFilter('soon')" style="color:#f59e0b;border-color:#f59e0b">Due Soon</button>
+          <button class="maint-filter-btn" onclick="setMaintFilter('ok')" style="color:#10b981;border-color:#10b981">OK</button>
+          <button class="maint-filter-btn" onclick="setMaintFilter('unknown')" style="color:#9ca3af;border-color:#9ca3af">No Date</button>
         </div>
       </div>
       <div id="maint-list" style="max-height:480px;overflow-y:auto"></div>
@@ -1187,9 +1187,22 @@ function closeMaintenance() { document.getElementById('maint-overlay').classList
 
 function setMaintFilter(f) {
   maintFilter = f;
-  // Update filter button states
+  var colorMap = { all: '', overdue: '#e53e3e', soon: '#f59e0b', ok: '#10b981', unknown: '#9ca3af' };
   document.querySelectorAll('.maint-filter-btn').forEach(function(btn) {
-    btn.classList.toggle('active', btn.getAttribute('onclick').indexOf("'" + f + "'") !== -1);
+    var isActive = btn.getAttribute('onclick').indexOf("'" + f + "'") !== -1;
+    if (isActive) {
+      var col = colorMap[f] || 'var(--navy)';
+      btn.style.background  = col;
+      btn.style.borderColor = col;
+      btn.style.color       = '#fff';
+    } else {
+      btn.style.background  = '#fafaf9';
+      btn.style.color       = colorMap[f === 'all' ? '' : Object.keys(colorMap).find(function(k){ return btn.getAttribute('onclick').indexOf("'"+k+"'") !== -1; })] || 'var(--text2)';
+      // Restore individual button colours
+      var btnKey = Object.keys(colorMap).find(function(k){ return btn.getAttribute('onclick').indexOf("'"+k+"'") !== -1; });
+      btn.style.color       = colorMap[btnKey] || 'var(--text2)';
+      btn.style.borderColor = colorMap[btnKey] || 'var(--border)';
+    }
   });
   renderMaintenance();
 }
@@ -1217,10 +1230,10 @@ function renderMaintenance() {
   // Summary counts
   var counts = { overdue: 0, soon: 0, ok: 0, unknown: 0 };
   sorted.forEach(function(p) { counts[getMaintStatus(p)]++; });
-  document.getElementById('maint-stat-overdue').innerHTML = '<div class="maint-stat-num" style="color:#ff477e">' + counts.overdue + '</div><div class="maint-stat-label">Overdue</div>';
-  document.getElementById('maint-stat-soon').innerHTML    = '<div class="maint-stat-num" style="color:#f59e0b">' + counts.soon    + '</div><div class="maint-stat-label">Due Soon</div>';
-  document.getElementById('maint-stat-ok').innerHTML      = '<div class="maint-stat-num" style="color:#10b981">' + counts.ok      + '</div><div class="maint-stat-label">OK</div>';
-  document.getElementById('maint-stat-unknown').innerHTML = '<div class="maint-stat-num" style="color:#9ca3af">' + counts.unknown + '</div><div class="maint-stat-label">No Date</div>';
+  document.getElementById('maint-stat-overdue').innerHTML = '<div class="maint-stat-num" style="color:#e53e3e">' + (counts.overdue || '0') + '</div><div class="maint-stat-label">Overdue</div>';
+  document.getElementById('maint-stat-soon').innerHTML    = '<div class="maint-stat-num" style="color:#f59e0b">' + (counts.soon    || '0') + '</div><div class="maint-stat-label">Due Soon</div>';
+  document.getElementById('maint-stat-ok').innerHTML      = '<div class="maint-stat-num" style="color:#10b981">' + (counts.ok      || '0') + '</div><div class="maint-stat-label">OK</div>';
+  document.getElementById('maint-stat-unknown').innerHTML = '<div class="maint-stat-num" style="color:#9ca3af">' + (counts.unknown || '0') + '</div><div class="maint-stat-label">No Date</div>';
   // Filter
   var visible = maintFilter === 'all' ? sorted : sorted.filter(function(p) { return getMaintStatus(p) === maintFilter; });
 
@@ -1236,7 +1249,7 @@ function renderMaintenance() {
     var dueStr   = p.nextBatteryDue ? formatNextDue(p.nextBatteryDue) : '—';
     var daysStr  = '';
     if (days !== null) {
-      if (days < 0)        daysStr = '<div class="maint-due-days" style="color:#ff477e">' + Math.abs(days) + 'd overdue</div>';
+      if (days < 0)        daysStr = '<div class="maint-due-days" style="color:#e53e3e">' + Math.abs(days) + 'd overdue</div>';
       else if (days === 0) daysStr = '<div class="maint-due-days" style="color:#f59e0b">Due today</div>';
       else if (days <= 30) daysStr = '<div class="maint-due-days" style="color:#f59e0b">In ' + days + ' days</div>';
       else                 daysStr = '<div class="maint-due-days" style="color:#10b981">In ' + days + ' days</div>';
