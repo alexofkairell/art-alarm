@@ -41,11 +41,59 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .add-btn { background: var(--orange); color: #fff; border: none; border-radius: 10px; width: 40px; height: 40px; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
 #main { padding: 16px; }
-#filter-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+#filter-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
 .filter-label { font-size: 12px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0; }
 .zone-chips { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
 .zone-chip { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1.5px solid var(--border); background: #fff; color: var(--text2); }
 .filter-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+
+/* Zone popover */
+.zone-btn-wrap { position: relative; flex-shrink: 0; }
+#zone-btn { display: flex; align-items: center; gap: 6px; padding: 7px 14px; background: #fff; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer; white-space: nowrap; transition: border-color 0.2s; }
+#zone-btn.active-filter { border-color: var(--orange); color: var(--orange); }
+#zone-btn .zone-caret { font-size: 10px; color: var(--text2); transition: transform 0.2s; }
+#zone-btn.open .zone-caret { transform: rotate(180deg); }
+#zone-popover { display: none; position: absolute; top: calc(100% + 8px); left: 0; z-index: 500; background: #fff; border: 1.5px solid var(--border); border-radius: 14px; box-shadow: 0 8px 32px rgba(13,27,42,0.15); padding: 14px; width: 340px; }
+#zone-popover.open { display: block; animation: popIn 0.15s ease both; }
+@keyframes popIn { from { opacity:0; transform: translateY(-6px) scale(0.97); } to { opacity:1; transform: translateY(0) scale(1); } }
+.zone-pop-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.zone-pop-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text2); }
+.zone-pop-all { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); background: #fafaf9; color: var(--text2); transition: all 0.15s; }
+.zone-pop-all:hover { border-color: var(--navy); color: var(--navy); }
+.zone-pop-all.active-all { background: var(--navy); border-color: var(--navy); color: #fff; }
+.zone-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; }
+.zone-row-label { grid-column: 1 / -1; font-size: 10px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 0 3px; border-top: 1px solid var(--border); margin-top: 2px; }
+.zone-row-label:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+.zone-num { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 5px; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; border: 1.5px solid transparent; transition: all 0.12s; }
+.zone-num.available { cursor: pointer; border-color: var(--border); background: #fafaf9; color: var(--text2); }
+.zone-num.available:hover { border-color: var(--orange); color: var(--orange); background: #fff8f5; }
+.zone-num.zone-active { background: var(--orange); border-color: var(--orange); color: #fff; }
+.zone-num.empty { background: transparent; border-color: transparent; color: #d8d3cb; cursor: default; font-size: 9px; }
+.zone-pop-footer { border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px; }
+.zone-pop-unzoned { display: inline-flex; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); background: #fafaf9; color: var(--text2); transition: all 0.15s; }
+.zone-pop-unzoned:hover { border-color: #5a6478; color: #5a6478; }
+.zone-pop-unzoned.active-unzoned { background: #5a6478; border-color: #5a6478; color: #fff; }
+
+/* Floor popover */
+.floor-btn-wrap { position: relative; flex-shrink: 0; }
+#floor-btn { display: flex; align-items: center; gap: 6px; padding: 7px 14px; background: #fff; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer; white-space: nowrap; transition: border-color 0.2s; }
+#floor-btn.active-filter { border-color: var(--teal); color: var(--teal); }
+#floor-btn .floor-caret { font-size: 10px; color: var(--text2); transition: transform 0.2s; }
+#floor-btn.open .floor-caret { transform: rotate(180deg); }
+#floor-popover { display: none; position: absolute; top: calc(100% + 8px); left: 0; z-index: 500; background: #fff; border: 1.5px solid var(--border); border-radius: 14px; box-shadow: 0 8px 32px rgba(13,27,42,0.15); padding: 14px; width: 220px; }
+#floor-popover.open { display: block; animation: popIn 0.15s ease both; }
+.floor-pop-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.floor-pop-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text2); }
+.floor-pop-all { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); background: #fafaf9; color: var(--text2); transition: all 0.15s; }
+.floor-pop-all:hover { border-color: var(--navy); color: var(--navy); }
+.floor-pop-all.active-all { background: var(--navy); border-color: var(--navy); color: #fff; }
+.floor-list { display: flex; flex-direction: column; gap: 3px; }
+.floor-chip { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-radius: 8px; font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; border: 1.5px solid var(--border); background: #fafaf9; color: var(--text2); cursor: pointer; transition: all 0.12s; }
+.floor-chip:hover { border-color: var(--teal); color: var(--teal); background: #f0fffe; }
+.floor-chip.floor-active { background: var(--teal); border-color: var(--teal); color: #fff; }
+.floor-chip.empty { color: #d8d3cb; border-color: transparent; background: transparent; cursor: default; pointer-events: none; }
+.floor-chip-count { font-size: 11px; opacity: 0.7; font-family: 'DM Sans', sans-serif; }
+
 .view-toggle { display: flex; background: #fff; border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; }
 .view-btn { padding: 6px 10px; border: none; background: none; cursor: pointer; font-size: 16px; color: var(--text2); }
 .view-btn.active { background: var(--navy); color: #fff; }
@@ -137,15 +185,54 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .menu-user { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
 .menu-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--orange); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; flex-shrink: 0; }
 .menu-name { font-weight: 600; font-size: 14px; }
-.menu-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 14px 20px; border: none; background: none; font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; color: var(--pink); text-align: left; }
-.menu-item:hover { background: #fff0f4; }
+.report-btn { width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 10px; background: #fafaf9; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: var(--text); cursor: pointer; text-align: left; transition: all 0.15s; }
+.report-btn:hover { border-color: var(--teal); color: var(--teal); background: #f0fffe; }
+
+/* History popover */
+.history-popover { display: none; position: fixed; z-index: 2000; background: #fff; border: 1.5px solid var(--border); border-radius: 14px; box-shadow: 0 8px 32px rgba(13,27,42,0.2); padding: 14px; width: 220px; }
+.history-popover.open { display: block; animation: popIn 0.15s ease both; }
+.history-pop-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.history-pop-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text2); }
+.history-pop-close { background: none; border: none; font-size: 16px; color: var(--text2); cursor: pointer; line-height: 1; padding: 0; }
+.history-list { display: flex; flex-direction: column; gap: 4px; }
+.history-entry { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; border-radius: 6px; background: #fafaf9; border: 1px solid var(--border); }
+.history-entry:first-child { background: #fff8f5; border-color: var(--orange); }
+.history-date { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text); }
+.history-badge { font-size: 10px; font-weight: 600; color: var(--orange); }
+.history-empty { font-size: 12px; color: var(--text2); font-style: italic; text-align: center; padding: 8px; }
+.history-trigger { font-size: 9px; font-weight: 700; color: var(--orange); cursor: pointer; margin-left: 3px; vertical-align: middle; }
+
+/* Maintenance dashboard */
+.maint-stat { flex: 1; padding: 12px 8px; text-align: center; border-right: 1px solid var(--border); }
+.maint-stat:last-child { border-right: none; }
+.maint-stat-num { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; line-height: 1; }
+.maint-stat-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text2); margin-top: 2px; }
+.maint-filter-btn { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; border: 1.5px solid var(--border); background: #fafaf9; color: var(--text2); cursor: pointer; transition: all 0.12s; }
+.maint-filter-btn.active { background: var(--navy); border-color: var(--navy); color: #fff; }
+.maint-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--border); }
+.maint-row:last-child { border-bottom: none; }
+.maint-status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.maint-row-info { flex: 1; min-width: 0; }
+.maint-row-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.maint-row-meta { font-size: 11px; color: var(--text2); margin-top: 1px; }
+.maint-row-due { flex-shrink: 0; text-align: right; }
+.maint-due-date { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; }
+.maint-due-days { font-size: 10px; font-weight: 700; margin-top: 1px; }
+.status-overdue { background: #ff477e; }
+.status-soon    { background: #f59e0b; }
+.status-ok      { background: #10b981; }
+.status-unknown { background: #d1d5db; }
+.menu-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 14px 20px; border: none; background: none; font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; text-align: left; }
+.menu-item.settings-item { color: var(--text); border-bottom: 1px solid var(--border); }
+.menu-item.settings-item:hover { background: #f5f5f5; }
+.menu-item:last-child { color: var(--pink); }
+.menu-item:last-child:hover { background: #fff0f4; }
 #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--navy); color: #fff; padding: 12px 24px; border-radius: 40px; font-size: 13px; font-weight: 500; z-index: 9999; transition: transform 0.3s ease; white-space: nowrap; pointer-events: none; }
 #toast.show { transform: translateX(-50%) translateY(0); }
 
 @media (max-width: 640px) {
   #product-grid { grid-template-columns: 1fr; }
   .two-col { grid-template-columns: 1fr; }
-  .filter-label { display: none; }
   .list-header, .list-row { grid-template-columns: 50px 1fr 90px; }
   .list-header .lh-serial, .list-header .lh-loc, .list-header .lh-act,
   .list-row .lr-serial, .list-row .lr-loc, .list-row .lr-act { display: none; }
@@ -185,8 +272,37 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   </div>
   <div id="main">
     <div id="filter-bar">
-      <span class="filter-label">Zone:</span>
-      <div class="zone-chips" id="zone-chips"></div>
+      <div class="zone-btn-wrap">
+        <button id="zone-btn" onclick="toggleZonePopover()">
+          <span>&#127981;</span>
+          <span id="zone-btn-label">Zone: All</span>
+          <span class="zone-caret">&#9660;</span>
+        </button>
+        <div id="zone-popover">
+          <div class="zone-pop-header">
+            <span class="zone-pop-title">Filter by Zone</span>
+            <div class="zone-pop-all" id="zone-pop-all-btn" onclick="setZone('all')">All</div>
+          </div>
+          <div class="zone-grid" id="zone-pop-grid"></div>
+          <div class="zone-pop-footer" id="zone-pop-footer" style="display:none">
+            <div class="zone-pop-unzoned" id="zone-pop-unzoned-btn" onclick="setZone('unzoned')"></div>
+          </div>
+        </div>
+      </div>
+      <div class="floor-btn-wrap">
+        <button id="floor-btn" onclick="toggleFloorPopover()">
+          <span>&#127970;</span>
+          <span id="floor-btn-label">Floor: All</span>
+          <span class="floor-caret">&#9660;</span>
+        </button>
+        <div id="floor-popover">
+          <div class="floor-pop-header">
+            <span class="floor-pop-title">Filter by Floor</span>
+            <div class="floor-pop-all" id="floor-pop-all-btn" onclick="setFloor('all')">All</div>
+          </div>
+          <div class="floor-list" id="floor-pop-list"></div>
+        </div>
+      </div>
       <div class="filter-right">
         <div class="view-toggle">
           <button class="view-btn active" id="btn-grid" onclick="setView('grid')">Grid</button>
@@ -353,27 +469,168 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
         <div style="font-size:11px;color:var(--text2);word-break:break-all" id="menu-name-email"></div>
       </div>
     </div>
+    <button class="menu-item settings-item" onclick="openSettings()">⚙️ Settings</button>
+    <button class="menu-item settings-item" onclick="openReports()">🖨️ Reports</button>
+    <button class="menu-item settings-item" onclick="openMaintenance()">🔋 Maintenance</button>
     <button class="menu-item" onclick="signOut()">Sign Out</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="reports-overlay" onclick="if(event.target===this)closeReports()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header" style="background:var(--teal)">
+      <div class="modal-title">Reports</div>
+      <button class="modal-close" onclick="closeReports()">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-group">
+        <div class="field-label">Available Reports</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+          <button class="report-btn" onclick="printBatteryWorksheet()">🔋 Battery Replacement Worksheet</button>
+          <button class="report-btn" onclick="printInventoryReport()">🖼️ Full Inventory Report</button>
+          <button class="report-btn" onclick="printInstallGuide()">📋 New Art Alarm Install Guide</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeReports()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="settings-overlay" onclick="if(event.target===this)closeSettings()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header" style="background:var(--purple)">
+      <div class="modal-title">Settings</div>
+      <button class="modal-close" onclick="closeSettings()">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-group">
+        <div class="field-label">Notification Email</div>
+        <input class="field-input" id="s-notify-email" type="email" placeholder="e.g. you@example.com">
+        <div style="font-size:11px;color:var(--text2);margin-top:6px;">Battery replacement reminders will be sent to this address.</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeSettings()">Cancel</button>
+      <button class="btn-save" style="background:var(--purple)" onclick="saveSettings()">Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="maint-overlay" onclick="if(event.target===this)closeMaintenance()">
+  <div class="modal-box" style="max-width:640px" onclick="event.stopPropagation()">
+    <div class="modal-header" style="background:#e67e22">
+      <div class="modal-title">🔋 Maintenance Dashboard</div>
+      <button class="modal-close" onclick="closeMaintenance()">&#10005;</button>
+    </div>
+    <div class="modal-body" style="padding:0">
+      <div id="maint-summary" style="display:flex;gap:0;border-bottom:1.5px solid var(--border)">
+        <div class="maint-stat" id="maint-stat-overdue"></div>
+        <div class="maint-stat" id="maint-stat-soon"></div>
+        <div class="maint-stat" id="maint-stat-ok"></div>
+        <div class="maint-stat" id="maint-stat-unknown"></div>
+      </div>
+      <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center">
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text2)">Filter:</span>
+        <div id="maint-filter-btns" style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="maint-filter-btn active" onclick="setMaintFilter('all')">All</button>
+          <button class="maint-filter-btn" onclick="setMaintFilter('overdue')">🔴 Overdue</button>
+          <button class="maint-filter-btn" onclick="setMaintFilter('soon')">🟡 Due Soon</button>
+          <button class="maint-filter-btn" onclick="setMaintFilter('ok')">🟢 OK</button>
+          <button class="maint-filter-btn" onclick="setMaintFilter('unknown')">⚪ No Date</button>
+        </div>
+      </div>
+      <div id="maint-list" style="max-height:480px;overflow-y:auto"></div>
+    </div>
   </div>
 </div>
 
 <div id="toast"></div>
 
+<div class="history-popover" id="history-popover">
+  <div class="history-pop-header">
+    <span class="history-pop-title" id="history-pop-title">History</span>
+    <button class="history-pop-close" onclick="closeHistoryPopover()">&#10005;</button>
+  </div>
+  <div class="history-list" id="history-pop-list"></div>
+</div>
+
 <script>
-var currentUser = '';
+
+// ════════════════════════════════════════════════
+// CONFIG & STATE
+// ════════════════════════════════════════════════
+
+var currentUser    = '';
 var currentUserEmail = '';
-var db = null;
-var auth = null;
-var products = [];
-var activeZone = 'all';
-var currentView = 'grid';
-var editingId = null;
-var deletingId = null;
-var noteId = null;
-var currentImage = null;
-var unsubscribe = null;
+var db             = null;
+var auth           = null;
+var products       = [];
+var activeZone     = 'all';
+var activeFloor    = 'all';
+var currentView    = 'grid';
+var editingId      = null;
+var deletingId     = null;
+var noteId         = null;
+var currentImage   = null;
+var unsubscribe    = null;
+var toastTimer     = null;
+
+var FLOOR_ORDER = ['BSMT','1FL','1MEZZ','2FL','3FL','4FL','5FL','5MEZZ','6FL','7FL','8FL','9FL','10FL'];
 
 function getZoneColor() { return '#ff5c1a'; }
+
+
+// ════════════════════════════════════════════════
+// FIREBASE INIT
+// ════════════════════════════════════════════════
+
+(function() {
+  var config = {
+    apiKey: "AIzaSyCdyN3sbboJfIWDUX4HjOy9yU-9JHY67CY",
+    authDomain: "art-alarm-bc506.firebaseapp.com",
+    projectId: "art-alarm-bc506",
+    storageBucket: "art-alarm-bc506.firebasestorage.app",
+    messagingSenderId: "950999882698",
+    appId: "1:950999882698:web:a6751938a6d31c52228d33"
+  };
+  firebase.initializeApp(config);
+  db   = firebase.firestore();
+  auth = firebase.auth();
+
+  auth.onAuthStateChanged(function(user) {
+    var errEl   = document.getElementById('login-error');
+    var checkEl = document.getElementById('login-checking');
+    if (user) {
+      checkEl.style.display = 'flex';
+      errEl.style.display   = 'none';
+      user.getIdTokenResult().then(function() {
+        currentUser      = user.displayName || user.email;
+        currentUserEmail = user.email.toLowerCase();
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app-wrap').style.display     = 'block';
+        startApp();
+      }).catch(function(e) {
+        showLoginError('Auth error: ' + e.message);
+      });
+    } else {
+      if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+      products         = [];
+      currentUser      = '';
+      currentUserEmail = '';
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('app-wrap').style.display     = 'none';
+      errEl.style.display   = 'none';
+      checkEl.style.display = 'none';
+    }
+  });
+})();
+
+
+// ════════════════════════════════════════════════
+// AUTH
+// ════════════════════════════════════════════════
 
 function signInWithGoogle() {
   var provider = new firebase.auth.GoogleAuthProvider();
@@ -399,51 +656,10 @@ function signOut() {
   auth.signOut();
 }
 
-(function() {
-  var config = {
-    apiKey: "AIzaSyCdyN3sbboJfIWDUX4HjOy9yU-9JHY67CY",
-    authDomain: "art-alarm-bc506.firebaseapp.com",
-    projectId: "art-alarm-bc506",
-    storageBucket: "art-alarm-bc506.firebasestorage.app",
-    messagingSenderId: "950999882698",
-    appId: "1:950999882698:web:a6751938a6d31c52228d33"
-  };
-  firebase.initializeApp(config);
-  db = firebase.firestore();
-  auth = firebase.auth();
-
-  auth.onAuthStateChanged(function(user) {
-    var errEl = document.getElementById('login-error');
-    var checkEl = document.getElementById('login-checking');
-    if (user) {
-      checkEl.style.display = 'flex';
-      errEl.style.display = 'none';
-      user.getIdTokenResult().then(function() {
-        currentUser = user.displayName || user.email;
-        currentUserEmail = user.email.toLowerCase();
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('app-wrap').style.display = 'block';
-        startApp();
-      }).catch(function(e) {
-        showLoginError('Auth error: ' + e.message);
-      });
-    } else {
-      if (unsubscribe) { unsubscribe(); unsubscribe = null; }
-      products = [];
-      currentUser = '';
-      currentUserEmail = '';
-      document.getElementById('login-screen').style.display = 'flex';
-      document.getElementById('app-wrap').style.display = 'none';
-      errEl.style.display = 'none';
-      checkEl.style.display = 'none';
-    }
-  });
-})();
-
 function startApp() {
   document.getElementById('menu-name-label').textContent = currentUser;
   document.getElementById('menu-name-email').textContent = currentUserEmail;
-  document.getElementById('menu-avatar').textContent = currentUser.charAt(0).toUpperCase();
+  document.getElementById('menu-avatar').textContent     = currentUser.charAt(0).toUpperCase();
   if (unsubscribe) unsubscribe();
   unsubscribe = db.collection('products').orderBy('created','asc').onSnapshot(function(snap) {
     products = [];
@@ -452,14 +668,22 @@ function startApp() {
   }, function() { showToast('Sync error'); });
 }
 
+
+// ════════════════════════════════════════════════
+// RENDER — main loop, grid, list
+// ════════════════════════════════════════════════
+
 function render() {
-  var query = (document.getElementById('search-input').value || '').toLowerCase();
+  var query  = (document.getElementById('search-input').value || '').toLowerCase();
   var sortBy = document.getElementById('sort-select').value || 'zone';
   var filtered = products.filter(function(p) {
     var hasZone = p.zone && p.zone.trim() !== '';
-    if (activeZone === 'all') { if (!hasZone) return false; }
+    if (activeZone === 'all')     { if (!hasZone) return false; }
     else if (activeZone === 'unzoned') { if (hasZone) return false; }
     else { if (p.zone !== activeZone) return false; }
+    if (activeFloor !== 'all') {
+      if (parseFloor(p.location) !== activeFloor) return false;
+    }
     if (query) {
       var hay = ((p.name||'') + ' ' + (p.artist||'') + ' ' + (p.zone||'') + ' ' + (p.serial||'') + ' ' + (p.location||'')).toLowerCase();
       if (hay.indexOf(query) === -1) return false;
@@ -468,35 +692,183 @@ function render() {
   });
   filtered.sort(function(a, b) {
     if (activeZone === 'unzoned') return (a.name||'').localeCompare(b.name||'');
-    if (sortBy === 'name') return (a.name||'').localeCompare(b.name||'');
+    if (sortBy === 'name')   return (a.name||'').localeCompare(b.name||'');
     if (sortBy === 'artist') return (a.artist||'').localeCompare(b.artist||'');
-    if (sortBy === 'zone') return (a.zone||'').localeCompare(b.zone||'');
+    if (sortBy === 'zone')   return (a.zone||'').localeCompare(b.zone||'');
     return (a.created||0) - (b.created||0);
   });
   renderZoneChips();
+  renderFloorChips();
   renderGrid(filtered);
   renderList(filtered);
   document.getElementById('empty-state').style.display = filtered.length === 0 ? 'block' : 'none';
 }
 
-function renderZoneChips() {
-  var zones = [];
-  products.forEach(function(p) { if (p.zone && p.zone.trim() !== '' && zones.indexOf(p.zone) === -1) zones.push(p.zone); });
-  zones.sort(function(a, b) {
-    var nA = parseFloat(a.replace(/[^0-9.]/g,'')), nB = parseFloat(b.replace(/[^0-9.]/g,''));
-    if (!isNaN(nA) && !isNaN(nB)) return nA - nB;
-    return a.localeCompare(b);
-  });
-  var html = chipHtml('All', 'all', activeZone === 'all', '#0d1b2a');
-  zones.forEach(function(z) { html += chipHtml(esc(z), z, activeZone === z, '#ff5c1a'); });
-  var uCount = products.filter(function(p){ return !p.zone || p.zone.trim() === ''; }).length;
-  if (uCount > 0) html += chipHtml('Unzoned (' + uCount + ')', 'unzoned', activeZone === 'unzoned', '#5a6478');
-  document.getElementById('zone-chips').innerHTML = html;
+function setView(v) {
+  currentView = v;
+  document.getElementById('btn-grid').classList.toggle('active', v === 'grid');
+  document.getElementById('btn-list').classList.toggle('active', v === 'list');
+  render();
 }
 
-function chipHtml(label, zone, active, color) {
-  var safeZone = zone.replace(/'/g, "\\'");
-  return '<div class="zone-chip" onclick="setZone(\'' + safeZone + '\')" style="' + (active ? 'background:' + color + ';border-color:' + color + ';color:#fff' : '') + '">' + label + '</div>';
+
+// ════════════════════════════════════════════════
+// FILTERS & POPOVERS — zone, floor, search
+// ════════════════════════════════════════════════
+
+// ── History Popover ──
+
+function openHistoryPopover(event, id, type) {
+  event.stopPropagation();
+  var p = products.find(function(x){ return x.id === id; });
+  if (!p) return;
+  var history = type === 'battery' ? (p.batteryHistory || []) : (p.transmitterHistory || []);
+  var title   = type === 'battery' ? 'Battery History' : 'Transmitter History';
+  // Show most recent first, max 10
+  var entries = history.slice().reverse().slice(0, 10);
+  var html = entries.length === 0
+    ? '<div class="history-empty">No history yet</div>'
+    : entries.map(function(e, i) {
+        var label = i === 0 ? '<span class="history-badge">Latest</span>' : '';
+        var detail = type === 'tx' && e.transmitter ? ' <span style="font-size:10px;color:var(--text2)">(' + esc(e.transmitter) + ')</span>' : '';
+        return '<div class="history-entry"><span class="history-date">' + esc(e.date) + detail + '</span>' + label + '</div>';
+      }).join('');
+  document.getElementById('history-pop-title').textContent = title;
+  document.getElementById('history-pop-list').innerHTML = html;
+  // Position near the clicked element
+  var pop  = document.getElementById('history-popover');
+  var rect = event.target.getBoundingClientRect();
+  pop.style.top  = (rect.bottom + window.scrollY + 6) + 'px';
+  pop.style.left = Math.min(rect.left, window.innerWidth - 230) + 'px';
+  pop.classList.add('open');
+}
+
+function closeHistoryPopover() {
+  document.getElementById('history-popover').classList.remove('open');
+}
+
+// Close all popovers on outside click
+document.addEventListener('click', function(e) {
+  var pop = document.getElementById('history-popover');
+  if (pop && !pop.contains(e.target)) closeHistoryPopover();
+  var zWrap = document.querySelector('.zone-btn-wrap');
+  if (zWrap && !zWrap.contains(e.target)) closeZonePopover();
+  var fWrap = document.querySelector('.floor-btn-wrap');
+  if (fWrap && !fWrap.contains(e.target)) closeFloorPopover();
+});
+
+// ── Zone ──
+
+function setZone(zone) { activeZone = zone; closeZonePopover(); render(); }
+
+function toggleZonePopover() {
+  var pop    = document.getElementById('zone-popover');
+  var btn    = document.getElementById('zone-btn');
+  var isOpen = pop.classList.contains('open');
+  closeFloorPopover();
+  pop.classList.toggle('open', !isOpen);
+  btn.classList.toggle('open', !isOpen);
+}
+
+function closeZonePopover() {
+  document.getElementById('zone-popover').classList.remove('open');
+  document.getElementById('zone-btn').classList.remove('open');
+}
+
+function renderZoneChips() {
+  // Collect used zone numbers in 500–599 range
+  var usedZones = {};
+  products.forEach(function(p) {
+    if (p.zone && p.zone.trim() !== '') {
+      var n = parseInt(p.zone, 10);
+      if (!isNaN(n) && n >= 500 && n <= 599) usedZones[n] = true;
+    }
+  });
+  // Build 10-per-row grid
+  var gridHtml = '';
+  for (var rowStart = 500; rowStart <= 590; rowStart += 10) {
+    gridHtml += '<div class="zone-row-label">' + rowStart + 's</div>';
+    for (var n = rowStart; n < rowStart + 10; n++) {
+      if (usedZones[n]) {
+        var isActive = activeZone === String(n);
+        gridHtml += '<div class="zone-num available' + (isActive ? ' zone-active' : '') + '" onclick="setZone(\'' + n + '\')">' + n + '</div>';
+      } else {
+        gridHtml += '<div class="zone-num empty">' + n + '</div>';
+      }
+    }
+  }
+  document.getElementById('zone-pop-grid').innerHTML = gridHtml;
+  // All button state
+  document.getElementById('zone-pop-all-btn').className = 'zone-pop-all' + (activeZone === 'all' ? ' active-all' : '');
+  // Unzoned footer
+  var uCount    = products.filter(function(p){ return !p.zone || p.zone.trim() === ''; }).length;
+  var footer    = document.getElementById('zone-pop-footer');
+  var unzonedBtn = document.getElementById('zone-pop-unzoned-btn');
+  if (uCount > 0) {
+    footer.style.display   = 'block';
+    unzonedBtn.textContent = 'Unzoned (' + uCount + ')';
+    unzonedBtn.className   = 'zone-pop-unzoned' + (activeZone === 'unzoned' ? ' active-unzoned' : '');
+  } else {
+    footer.style.display = 'none';
+  }
+  // Button label
+  var label = activeZone === 'all' ? 'All' : activeZone === 'unzoned' ? 'Unzoned' : activeZone;
+  document.getElementById('zone-btn-label').textContent = 'Zone: ' + label;
+  document.getElementById('zone-btn').classList.toggle('active-filter', activeZone !== 'all');
+}
+
+// ── Floor ──
+
+function parseFloor(location) {
+  if (!location) return '';
+  var loc = location.trim().toUpperCase();
+  for (var i = 0; i < FLOOR_ORDER.length; i++) {
+    var f = FLOOR_ORDER[i];
+    if (loc === f || loc.indexOf(f + ' ') === 0 || loc.indexOf(f + ',') === 0 || loc.indexOf(f + '-') === 0) return f;
+  }
+  return '';
+}
+
+function setFloor(floor) { activeFloor = floor; closeFloorPopover(); render(); }
+
+function toggleFloorPopover() {
+  var pop    = document.getElementById('floor-popover');
+  var btn    = document.getElementById('floor-btn');
+  var isOpen = pop.classList.contains('open');
+  closeZonePopover();
+  pop.classList.toggle('open', !isOpen);
+  btn.classList.toggle('open', !isOpen);
+}
+
+function closeFloorPopover() {
+  document.getElementById('floor-popover').classList.remove('open');
+  document.getElementById('floor-btn').classList.remove('open');
+}
+
+function renderFloorChips() {
+  // Count artworks per floor from parsed location
+  var counts = {};
+  products.forEach(function(p) {
+    var f = parseFloor(p.location);
+    if (f) counts[f] = (counts[f] || 0) + 1;
+  });
+  var html = '';
+  FLOOR_ORDER.forEach(function(f) {
+    var count    = counts[f] || 0;
+    var isActive = activeFloor === f;
+    if (count > 0) {
+      html += '<div class="floor-chip' + (isActive ? ' floor-active' : '') + '" onclick="setFloor(\'' + f + '\')">' +
+        '<span>' + esc(f) + '</span><span class="floor-chip-count">' + count + '</span></div>';
+    } else {
+      html += '<div class="floor-chip empty"><span>' + esc(f) + '</span></div>';
+    }
+  });
+  document.getElementById('floor-pop-list').innerHTML = html;
+  // All button state
+  document.getElementById('floor-pop-all-btn').className = 'floor-pop-all' + (activeFloor === 'all' ? ' active-all' : '');
+  // Button label
+  document.getElementById('floor-btn-label').textContent = 'Floor: ' + (activeFloor === 'all' ? 'All' : activeFloor);
+  document.getElementById('floor-btn').classList.toggle('active-filter', activeFloor !== 'all');
 }
 
 function renderGrid(items) {
@@ -511,14 +883,18 @@ function renderGrid(items) {
     var commentClick = p.comments ? '' : 'onclick="openNote(\'' + p.id + '\')"';
     var byline = p.editedBy ? '<div class="card-byline">Edited by ' + esc(p.editedBy) + ' - ' + timeAgo(p.editedAt) + '</div>' : '';
     var zoneHtml = p.zone ? '<div class="card-zone-block" style="border-color:' + col + '"><div class="card-zone-label">ZONE</div><div class="card-zone-val" style="color:' + col + '">' + esc(p.zone) + '</div></div>' : '';
+    var txHistCount  = p.transmitterHistory ? p.transmitterHistory.length : 0;
+    var batHistCount = p.batteryHistory ? p.batteryHistory.length : 0;
+    var txHistBtn    = txHistCount > 1  ? '<span class="history-trigger" onclick="openHistoryPopover(event,\'' + p.id + '\',\'tx\')">&#128203; ' + txHistCount + '</span>' : '';
+    var batHistBtn   = batHistCount > 1 ? '<span class="history-trigger" onclick="openHistoryPopover(event,\'' + p.id + '\',\'battery\')">&#128203; ' + batHistCount + '</span>' : '';
     return '<div class="card" style="animation-delay:' + (i*0.05) + 's">' +
       '<div class="card-img-wrap">' + imgHtml + '</div>' +
       '<div class="card-body">' +
         '<div class="card-title-row"><div style="flex:1;min-width:0"><div class="card-name">' + esc(p.name||'') + '</div><div class="card-artist">by ' + esc(p.artist||'') + '</div></div>' + zoneHtml + '</div>' +
         '<div class="card-meta">' +
           '<div class="meta-pair-row"><div class="meta-cell"><span class="meta-cell-label">Serial</span><span class="meta-cell-val">' + esc(p.serial||'-') + '</span></div><div class="meta-cell"><span class="meta-cell-label">Location</span><span class="meta-cell-val">' + esc(p.location||'-') + '</span></div></div>' +
-          '<div class="meta-pair-row"><div class="meta-cell"><span class="meta-cell-label">Transmitter</span><span class="meta-cell-val">' + esc(p.transmitter||'-') + '</span></div><div class="meta-cell"><span class="meta-cell-label">Installed</span><span class="meta-cell-val">' + esc(p.transmitterDate||'-') + '</span></div></div>' +
-          '<div class="meta-pair-row"><div class="meta-cell"><span class="meta-cell-label">Battery</span><span class="meta-cell-val">' + esc(p.battery||'-') + '</span></div><div class="meta-cell"><span class="meta-cell-label">Replaced</span><span class="meta-cell-val">' + esc(p.batteryDate||'-') + '</span></div></div>' +
+          '<div class="meta-pair-row"><div class="meta-cell"><span class="meta-cell-label">Transmitter</span><span class="meta-cell-val">' + esc(p.transmitter||'-') + '</span></div><div class="meta-cell"><span class="meta-cell-label">Installed ' + txHistBtn + '</span><span class="meta-cell-val">' + esc(p.transmitterDate||'-') + '</span></div></div>' +
+          '<div class="meta-pair-row"><div class="meta-cell"><span class="meta-cell-label">Battery</span><span class="meta-cell-val">' + esc(p.battery||'-') + '</span></div><div class="meta-cell"><span class="meta-cell-label">Replaced ' + batHistBtn + '</span><span class="meta-cell-val">' + esc(p.batteryDate||'-') + '</span></div></div>' +
         '</div>' +
         '<div class="' + commentClass + '" ' + commentClick + '>' + commentText + '</div>' +
         byline +
@@ -552,124 +928,639 @@ function renderList(items) {
   }).join('');
 }
 
-function setZone(zone) { activeZone = zone; render(); }
-function setView(v) {
-  currentView = v;
-  document.getElementById('btn-grid').classList.toggle('active', v==='grid');
-  document.getElementById('btn-list').classList.toggle('active', v==='list');
-  render();
+
+// ════════════════════════════════════════════════
+// MODALS — ADD / EDIT / DELETE
+// ════════════════════════════════════════════════
+
+function openModal() {
+  editingId    = null;
+  currentImage = null;
+  clearForm();
+  document.getElementById('modal-title-text').textContent = 'Add Artwork';
+  document.getElementById('add-overlay').classList.add('open');
 }
 
-function openModal() { editingId = null; currentImage = null; clearForm(); document.getElementById('modal-title-text').textContent = 'Add Artwork'; document.getElementById('add-overlay').classList.add('open'); }
 function closeModal() { document.getElementById('add-overlay').classList.remove('open'); }
 
 function clearForm() {
-  ['f-name','f-artist','f-zone','f-serial','f-location','f-comments','f-transmitter','f-transmitter-date','f-battery','f-battery-date'].forEach(function(id){ document.getElementById(id).value = ''; });
+  ['f-name','f-artist','f-zone','f-serial','f-location','f-comments','f-transmitter','f-transmitter-date','f-battery','f-battery-date']
+    .forEach(function(id){ document.getElementById(id).value = ''; });
   document.getElementById('img-file').value = '';
   currentImage = null;
-  document.getElementById('img-drop').style.display = 'block';
+  document.getElementById('img-drop').style.display        = 'block';
   document.getElementById('img-preview-wrap').style.display = 'none';
-  document.getElementById('img-preview').src = '';
+  document.getElementById('img-preview').src               = '';
 }
 
 function editProduct(id) {
   var p = products.find(function(x){ return x.id === id; });
   if (!p) return;
-  editingId = id; currentImage = p.image || null;
-  document.getElementById('modal-title-text').textContent = 'Edit Artwork';
-  document.getElementById('f-name').value = p.name||'';
-  document.getElementById('f-artist').value = p.artist||'';
-  document.getElementById('f-zone').value = p.zone||'';
-  document.getElementById('f-serial').value = p.serial||'';
-  document.getElementById('f-location').value = p.location||'';
-  document.getElementById('f-comments').value = p.comments||'';
-  document.getElementById('f-transmitter').value = p.transmitter||'';
-  document.getElementById('f-transmitter-date').value = p.transmitterDate||'';
-  document.getElementById('f-battery').value = p.battery||'';
-  document.getElementById('f-battery-date').value = p.batteryDate||'';
-  if (p.image) { document.getElementById('img-drop').style.display='none'; document.getElementById('img-preview-wrap').style.display='block'; document.getElementById('img-preview').src=p.image; }
-  else { document.getElementById('img-drop').style.display='block'; document.getElementById('img-preview-wrap').style.display='none'; }
+  editingId    = id;
+  currentImage = p.image || null;
+  document.getElementById('modal-title-text').textContent  = 'Edit Artwork';
+  document.getElementById('f-name').value                  = p.name||'';
+  document.getElementById('f-artist').value                = p.artist||'';
+  document.getElementById('f-zone').value                  = p.zone||'';
+  document.getElementById('f-serial').value                = p.serial||'';
+  document.getElementById('f-location').value              = p.location||'';
+  document.getElementById('f-comments').value              = p.comments||'';
+  document.getElementById('f-transmitter').value           = p.transmitter||'';
+  document.getElementById('f-transmitter-date').value      = p.transmitterDate||'';
+  document.getElementById('f-battery').value               = p.battery||'';
+  document.getElementById('f-battery-date').value          = p.batteryDate||'';
+  if (p.image) {
+    document.getElementById('img-drop').style.display        = 'none';
+    document.getElementById('img-preview-wrap').style.display = 'block';
+    document.getElementById('img-preview').src               = p.image;
+  } else {
+    document.getElementById('img-drop').style.display        = 'block';
+    document.getElementById('img-preview-wrap').style.display = 'none';
+  }
   document.getElementById('add-overlay').classList.add('open');
 }
 
 function saveProduct() {
-  var name = document.getElementById('f-name').value.trim();
-  var artist = document.getElementById('f-artist').value.trim();
-  var location = document.getElementById('f-location').value.trim();
+  var name       = document.getElementById('f-name').value.trim();
+  var artist     = document.getElementById('f-artist').value.trim();
+  var location   = document.getElementById('f-location').value.trim();
   if (!name || !artist || !location) { showToast('Please fill all required fields'); return; }
-  var now = Date.now();
+  var now        = Date.now();
+  var batteryDate = document.getElementById('f-battery-date').value.trim();
   var data = {
-    name: name, artist: artist,
-    zone: document.getElementById('f-zone').value.trim(),
-    serial: document.getElementById('f-serial').value.trim(),
-    location: location,
-    comments: document.getElementById('f-comments').value.trim(),
-    transmitter: document.getElementById('f-transmitter').value,
+    name:            name,
+    artist:          artist,
+    zone:            document.getElementById('f-zone').value.trim(),
+    serial:          document.getElementById('f-serial').value.trim(),
+    location:        location,
+    comments:        document.getElementById('f-comments').value.trim(),
+    transmitter:     document.getElementById('f-transmitter').value,
     transmitterDate: document.getElementById('f-transmitter-date').value.trim(),
-    battery: document.getElementById('f-battery').value,
-    batteryDate: document.getElementById('f-battery-date').value.trim(),
-    image: currentImage || null,
-    editedBy: currentUser, editedAt: now
+    battery:         document.getElementById('f-battery').value,
+    batteryDate:     batteryDate,
+    image:           currentImage || null,
+    editedBy:        currentUser,
+    editedAt:        now
   };
+
+  // Battery history — only append if date changed
+  if (batteryDate) {
+    var existing      = editingId ? (products.find(function(x){ return x.id === editingId; }) || {}) : {};
+    var history       = existing.batteryHistory ? existing.batteryHistory.slice() : [];
+    var lastEntry     = history.length > 0 ? history[history.length - 1] : null;
+    if (!lastEntry || lastEntry.date !== batteryDate) {
+      history.push({ date: batteryDate, recordedAt: now });
+    }
+    data.batteryHistory = history;
+    data.nextBatteryDue = calcNextBatteryDue(history);
+  }
+
+  // Transmitter history — track install date changes
+  var transmitterDate = document.getElementById('f-transmitter-date').value.trim();
+  if (transmitterDate) {
+    var existing2      = editingId ? (products.find(function(x){ return x.id === editingId; }) || {}) : {};
+    var txHistory      = existing2.transmitterHistory ? existing2.transmitterHistory.slice() : [];
+    var lastTxEntry    = txHistory.length > 0 ? txHistory[txHistory.length - 1] : null;
+    if (!lastTxEntry || lastTxEntry.date !== transmitterDate) {
+      txHistory.push({ date: transmitterDate, transmitter: document.getElementById('f-transmitter').value, recordedAt: now });
+    }
+    data.transmitterHistory = txHistory;
+  }
+
   if (editingId) {
-    db.collection('products').doc(editingId).update(data).then(function(){ showToast('Artwork updated'); }).catch(function(e){ showToast('Error: '+e.message); });
+    db.collection('products').doc(editingId).update(data)
+      .then(function(){ showToast('Artwork updated'); })
+      .catch(function(e){ showToast('Error: ' + e.message); });
   } else {
     data.created = now;
-    db.collection('products').add(data).then(function(){ showToast('Artwork added'); }).catch(function(e){ showToast('Error: '+e.message); });
+    db.collection('products').add(data)
+      .then(function(){ showToast('Artwork added'); })
+      .catch(function(e){ showToast('Error: ' + e.message); });
   }
   closeModal();
 }
 
-function handleDrop(e) { e.preventDefault(); document.getElementById('img-drop').classList.remove('drag-over'); var f=e.dataTransfer.files[0]; if(f) processImageFile(f); }
-function handleFileInput(input) { if(input.files[0]) processImageFile(input.files[0]); }
+function openDelete(id) {
+  var p = products.find(function(x){ return x.id === id; });
+  if (!p) return;
+  deletingId = id;
+  document.getElementById('del-name-label').textContent = p.name || 'this artwork';
+  document.getElementById('delete-overlay').classList.add('open');
+}
+
+function closeDelete() { document.getElementById('delete-overlay').classList.remove('open'); }
+
+function confirmDelete() {
+  if (!deletingId) return;
+  db.collection('products').doc(deletingId).delete()
+    .then(function(){ showToast('Artwork deleted'); })
+    .catch(function(e){ showToast('Error: ' + e.message); });
+  closeDelete();
+}
+
+
+// ════════════════════════════════════════════════
+// NOTES
+// ════════════════════════════════════════════════
+
+function openNote(id) {
+  var p = products.find(function(x){ return x.id === id; });
+  if (!p) return;
+  noteId = id;
+  document.getElementById('note-title').textContent = p.name || 'Note';
+  document.getElementById('note-sub').textContent   = 'by ' + (p.artist || '');
+  document.getElementById('note-text').value        = p.comments || '';
+  document.getElementById('note-overlay').classList.add('open');
+}
+
+function closeNote() { document.getElementById('note-overlay').classList.remove('open'); }
+function clearNote() { document.getElementById('note-text').value = ''; }
+
+function saveNote() {
+  if (!noteId) return;
+  var text = document.getElementById('note-text').value.trim();
+  db.collection('products').doc(noteId).update({ comments: text, editedBy: currentUser, editedAt: Date.now() })
+    .then(function(){ showToast('Note saved'); })
+    .catch(function(e){ showToast('Error: ' + e.message); });
+  closeNote();
+}
+
+
+// ════════════════════════════════════════════════
+// IMAGE HANDLING
+// ════════════════════════════════════════════════
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('img-drop').classList.remove('drag-over');
+  var f = e.dataTransfer.files[0];
+  if (f) processImageFile(f);
+}
+
+function handleFileInput(input) {
+  if (input.files[0]) processImageFile(input.files[0]);
+}
+
 function processImageFile(file) {
-  var fn = file.name;
+  var fn     = file.name;
   var reader = new FileReader();
   reader.onload = function(e) {
     currentImage = e.target.result;
-    document.getElementById('img-preview').src = currentImage;
-    document.getElementById('img-drop').style.display = 'none';
+    document.getElementById('img-preview').src               = currentImage;
+    document.getElementById('img-drop').style.display        = 'none';
     document.getElementById('img-preview-wrap').style.display = 'block';
     autoFillFromFilename(fn);
   };
   reader.readAsDataURL(file);
 }
-function clearImage() { currentImage=null; document.getElementById('img-preview').src=''; document.getElementById('img-preview-wrap').style.display='none'; document.getElementById('img-drop').style.display='block'; document.getElementById('img-file').value=''; }
+
+function clearImage() {
+  currentImage = null;
+  document.getElementById('img-preview').src               = '';
+  document.getElementById('img-preview-wrap').style.display = 'none';
+  document.getElementById('img-drop').style.display        = 'block';
+  document.getElementById('img-file').value                = '';
+}
+
 function autoFillFromFilename(fn) {
-  var base = fn.replace(/\.[^.]+$/,'').replace(/[-_]/g,' ').trim();
-  var m = base.match(/^(.+?)\s+by\s+(.+)$/i);
-  var nf=document.getElementById('f-name'), af=document.getElementById('f-artist');
-  if (m) { if(!nf.value.trim()) nf.value=toTitleCase(m[1].trim()); if(!af.value.trim()) af.value=toTitleCase(m[2].trim()); }
-  else { if(!nf.value.trim()) nf.value=toTitleCase(base); }
+  var base = fn.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ').trim();
+  var m    = base.match(/^(.+?)\s+by\s+(.+)$/i);
+  var nf   = document.getElementById('f-name');
+  var af   = document.getElementById('f-artist');
+  if (m) {
+    if (!nf.value.trim()) nf.value = toTitleCase(m[1].trim());
+    if (!af.value.trim()) af.value = toTitleCase(m[2].trim());
+  } else {
+    if (!nf.value.trim()) nf.value = toTitleCase(base);
+  }
 }
-function toTitleCase(s) { return s.replace(/\b\w/g,function(c){return c.toUpperCase();}); }
 
-function autoFillBattery() {
-  var t=document.getElementById('f-transmitter').value, b=document.getElementById('f-battery');
-  if(t==='1101'||t==='1106') b.value='CR123A';
-  else if(t==='1107') b.value='CR2430';
+
+// ════════════════════════════════════════════════
+// MENU & SETTINGS
+// ════════════════════════════════════════════════
+
+var maintFilter = 'all';
+
+function openMaintenance() {
+  closeMenu();
+  maintFilter = 'all';
+  renderMaintenance();
+  document.getElementById('maint-overlay').classList.add('open');
 }
-function pad(n){return String(n).padStart(2,'0');}
-function setTodayTransmitterDate() { var d=new Date(); document.getElementById('f-transmitter-date').value=pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear(); }
-function setTodayDate() { var d=new Date(); document.getElementById('f-battery-date').value=pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear(); }
 
-function openNote(id) { var p=products.find(function(x){return x.id===id;}); if(!p) return; noteId=id; document.getElementById('note-title').textContent=p.name||'Note'; document.getElementById('note-sub').textContent='by '+(p.artist||''); document.getElementById('note-text').value=p.comments||''; document.getElementById('note-overlay').classList.add('open'); }
-function closeNote() { document.getElementById('note-overlay').classList.remove('open'); }
-function clearNote() { document.getElementById('note-text').value=''; }
-function saveNote() { if(!noteId) return; var text=document.getElementById('note-text').value.trim(); db.collection('products').doc(noteId).update({comments:text,editedBy:currentUser,editedAt:Date.now()}).then(function(){showToast('Note saved');}).catch(function(e){showToast('Error: '+e.message);}); closeNote(); }
+function closeMaintenance() { document.getElementById('maint-overlay').classList.remove('open'); }
 
-function openDelete(id) { var p=products.find(function(x){return x.id===id;}); if(!p) return; deletingId=id; document.getElementById('del-name-label').textContent=p.name||'this artwork'; document.getElementById('delete-overlay').classList.add('open'); }
-function closeDelete() { document.getElementById('delete-overlay').classList.remove('open'); }
-function confirmDelete() { if(!deletingId) return; db.collection('products').doc(deletingId).delete().then(function(){showToast('Artwork deleted');}).catch(function(e){showToast('Error: '+e.message);}); closeDelete(); }
+function setMaintFilter(f) {
+  maintFilter = f;
+  // Update filter button states
+  document.querySelectorAll('.maint-filter-btn').forEach(function(btn) {
+    btn.classList.toggle('active', btn.getAttribute('onclick').indexOf("'" + f + "'") !== -1);
+  });
+  renderMaintenance();
+}
 
-function openMenu() { document.getElementById('menu-overlay').classList.add('open'); }
+function getMaintStatus(p) {
+  if (!p.nextBatteryDue && !p.batteryDate) return 'unknown';
+  var due  = p.nextBatteryDue;
+  if (!due) return 'unknown';
+  var days = daysUntil(due);
+  if (days < 0)   return 'overdue';
+  if (days <= 30) return 'soon';
+  return 'ok';
+}
+
+function renderMaintenance() {
+  // Sort: overdue first, then soon, then ok, then unknown; within each group by days
+  var statusOrder = { overdue: 0, soon: 1, ok: 2, unknown: 3 };
+  var sorted = products.slice().sort(function(a, b) {
+    var sA = getMaintStatus(a), sB = getMaintStatus(b);
+    if (statusOrder[sA] !== statusOrder[sB]) return statusOrder[sA] - statusOrder[sB];
+    var dA = a.nextBatteryDue || Infinity, dB = b.nextBatteryDue || Infinity;
+    return dA - dB;
+  });
+
+  // Summary counts
+  var counts = { overdue: 0, soon: 0, ok: 0, unknown: 0 };
+  sorted.forEach(function(p) { counts[getMaintStatus(p)]++; });
+  document.getElementById('maint-stat-overdue').innerHTML = '<div class="maint-stat-num" style="color:#ff477e">' + counts.overdue + '</div><div class="maint-stat-label">Overdue</div>';
+  document.getElementById('maint-stat-soon').innerHTML    = '<div class="maint-stat-num" style="color:#f59e0b">' + counts.soon    + '</div><div class="maint-stat-label">Due Soon</div>';
+  document.getElementById('maint-stat-ok').innerHTML      = '<div class="maint-stat-num" style="color:#10b981">' + counts.ok      + '</div><div class="maint-stat-label">OK</div>';
+  document.getElementById('maint-stat-unknown').innerHTML = '<div class="maint-stat-num" style="color:#9ca3af">' + counts.unknown + '</div><div class="maint-stat-label">No Date</div>';
+
+  // Filter
+  var visible = maintFilter === 'all' ? sorted : sorted.filter(function(p) { return getMaintStatus(p) === maintFilter; });
+
+  if (visible.length === 0) {
+    document.getElementById('maint-list').innerHTML = '<div style="padding:32px;text-align:center;color:var(--text2);font-size:13px">No artworks in this category</div>';
+    return;
+  }
+
+  document.getElementById('maint-list').innerHTML = visible.map(function(p) {
+    var status   = getMaintStatus(p);
+    var dotClass = 'maint-status-dot status-' + status;
+    var days     = p.nextBatteryDue ? daysUntil(p.nextBatteryDue) : null;
+    var dueStr   = p.nextBatteryDue ? formatNextDue(p.nextBatteryDue) : '—';
+    var daysStr  = '';
+    if (days !== null) {
+      if (days < 0)        daysStr = '<div class="maint-due-days" style="color:#ff477e">' + Math.abs(days) + 'd overdue</div>';
+      else if (days === 0) daysStr = '<div class="maint-due-days" style="color:#f59e0b">Due today</div>';
+      else if (days <= 30) daysStr = '<div class="maint-due-days" style="color:#f59e0b">In ' + days + ' days</div>';
+      else                 daysStr = '<div class="maint-due-days" style="color:#10b981">In ' + days + ' days</div>';
+    }
+    var floor = parseFloor(p.location) || '—';
+    return '<div class="maint-row">' +
+      '<div class="maint-row-info">' +
+        '<div class="maint-row-name">' + esc(floor) + ' · ' + esc(p.location||'—') + ' · Zone ' + esc(p.zone||'—') + '</div>' +
+        '<div class="maint-row-meta">' + esc(p.name||'') + ' · ' + esc(p.battery||'—') + '</div>' +
+      '</div>' +
+      '<div class="maint-row-due">' +
+        '<div class="maint-due-date">' + dueStr + '</div>' +
+        daysStr +
+      '</div>' +
+      '<div class="' + dotClass + '"></div>' +
+    '</div>';
+  }).join('');
+}
+
+function openReports()  { closeMenu(); document.getElementById('reports-overlay').classList.add('open'); }
+function closeReports() { document.getElementById('reports-overlay').classList.remove('open'); }
+
+
+// ════════════════════════════════════════════════
+// PRINT REPORTS
+// ════════════════════════════════════════════════
+
+function printHead(title) {
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
+    '<title>' + title + '</title>' +
+    '<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">' +
+    '<style>' +
+      'body{font-family:"DM Sans",sans-serif;color:#0d1b2a;margin:0;padding:24px 32px;font-size:12px}' +
+      'h1{font-family:"Syne",sans-serif;font-size:22px;font-weight:800;margin:0}' +
+      '.logo span{color:#ff5c1a}' +
+      '.report-header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #0d1b2a;padding-bottom:12px;margin-bottom:20px}' +
+      '.report-meta{font-size:11px;color:#5a6478;text-align:right}' +
+      'table{width:100%;border-collapse:collapse;margin-bottom:20px}' +
+      'th{background:#0d1b2a;color:#fff;font-family:"Syne",sans-serif;font-size:10px;text-transform:uppercase;letter-spacing:0.06em;padding:7px 10px;text-align:left}' +
+      'td{padding:7px 10px;border-bottom:1px solid #e2ddd4;vertical-align:top;font-size:11px}' +
+      'tr:nth-child(even) td{background:#f7f5f1}' +
+      '.mono{font-family:"DM Mono",monospace}' +
+      '.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;color:#fff}' +
+      '.overdue{background:#ff477e}.soon{background:#f59e0b}.ok{background:#10b981}.unknown{background:#9ca3af}' +
+      '.check{width:16px;height:16px;border:1.5px solid #aaa;border-radius:3px;display:inline-block}' +
+      '.field-block{border:1px solid #e2ddd4;border-radius:6px;padding:8px 12px;margin-bottom:10px}' +
+      '.field-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#5a6478;margin-bottom:3px}' +
+      '.field-value{font-size:13px;min-height:22px;border-bottom:1px solid #e2ddd4}' +
+      '.field-hint{font-size:9px;color:#9ca3af;margin-top:3px}' +
+      '.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}' +
+      '.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}' +
+      '.section-title{font-family:"Syne",sans-serif;font-size:13px;font-weight:700;margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid #e2ddd4}' +
+      '.floor-group{margin-bottom:24px}' +
+      '.floor-heading{font-family:"Syne",sans-serif;font-size:14px;font-weight:800;background:#f0ece4;padding:6px 10px;border-radius:6px;margin-bottom:8px}' +
+      '@media print{body{padding:12px 18px}.no-print{display:none}' +
+        'thead{display:table-header-group}}' +
+    '</style></head><body>';
+}
+
+function printFooter() {
+  var d = new Date();
+  var dateStr = pad(d.getDate()) + '/' + pad(d.getMonth()+1) + '/' + d.getFullYear();
+  return '<div class="no-print" style="margin-top:24px;text-align:center">' +
+    '<button onclick="window.print()" style="padding:10px 28px;background:#0d1b2a;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:\'DM Sans\',sans-serif">🖨️ Print / Save as PDF</button>' +
+    '</div>' +
+    '<div style="margin-top:16px;font-size:10px;color:#9ca3af;text-align:center">Generated by ArtAlarm · ' + dateStr + ' · ' + currentUser + '</div>' +
+    '</body></html>';
+}
+
+function reportHeader(title, subtitle) {
+  var d = new Date();
+  var dateStr = pad(d.getDate()) + '/' + pad(d.getMonth()+1) + '/' + d.getFullYear();
+  return '<div class="report-header">' +
+    '<div><div class="logo" style="margin-bottom:4px"><h1>Art<span>Alarm</span></h1></div>' +
+    '<div style="font-size:16px;font-weight:600;margin-top:4px">' + title + '</div>' +
+    (subtitle ? '<div style="font-size:11px;color:#5a6478;margin-top:2px">' + subtitle + '</div>' : '') +
+    '</div>' +
+    '<div class="report-meta"><div>' + dateStr + '</div><div>' + currentUser + '</div></div>' +
+    '</div>';
+}
+
+// ── Battery Replacement Worksheet ──
+function printBatteryWorksheet() {
+  closeReports();
+  var statusOrder = { overdue: 0, soon: 1, ok: 2, unknown: 3 };
+  var sorted = products.slice().sort(function(a, b) {
+    var sA = getMaintStatus(a), sB = getMaintStatus(b);
+    if (statusOrder[sA] !== statusOrder[sB]) return statusOrder[sA] - statusOrder[sB];
+    var fA = parseFloor(a.location)||'ZZZ', fB = parseFloor(b.location)||'ZZZ';
+    if (fA !== fB) return FLOOR_ORDER.indexOf(fA) - FLOOR_ORDER.indexOf(fB);
+    return (a.zone||'').localeCompare(b.zone||'');
+  });
+
+  var overdue = sorted.filter(function(p){ return getMaintStatus(p)==='overdue'; }).length;
+  var soon    = sorted.filter(function(p){ return getMaintStatus(p)==='soon'; }).length;
+  var subtitle = sorted.length + ' artworks · ' + overdue + ' overdue · ' + soon + ' due within 30 days';
+
+  var rows = sorted.map(function(p) {
+    var status  = getMaintStatus(p);
+    var days    = p.nextBatteryDue ? daysUntil(p.nextBatteryDue) : null;
+    var dueStr  = p.nextBatteryDue ? formatNextDue(p.nextBatteryDue) : '—';
+    var daysLbl = days === null ? '' : days < 0 ? Math.abs(days)+'d overdue' : days === 0 ? 'Today' : 'In '+days+'d';
+    var floor   = parseFloor(p.location) || '—';
+    return '<tr>' +
+      '<td><span class="check"></span></td>' +
+      '<td class="mono">' + esc(floor) + '</td>' +
+      '<td>' + esc(p.location||'—') + '</td>' +
+      '<td class="mono">' + esc(p.zone||'—') + '</td>' +
+      '<td><strong>' + esc(p.name||'—') + '</strong></td>' +
+      '<td class="mono">' + esc(p.battery||'—') + '</td>' +
+      '<td class="mono">' + esc(p.batteryDate||'—') + '</td>' +
+      '<td class="mono">' + dueStr + '</td>' +
+      '<td><span class="badge ' + status + '">' + daysLbl + '</span></td>' +
+      '<td style="min-width:80px"></td>' +
+    '</tr>';
+  }).join('');
+
+  var html = printHead('Battery Replacement Worksheet') +
+    reportHeader('Battery Replacement Worksheet', subtitle) +
+    '<table><thead><tr>' +
+      '<th>✓</th><th>Floor</th><th>Location</th><th>Zone</th><th>Artwork</th>' +
+      '<th>Battery</th><th>Last Replaced</th><th>Next Due</th><th>Status</th><th>Technician</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table>' +
+    printFooter();
+
+  var w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
+}
+
+// ── Full Inventory Report ──
+function printInventoryReport() {
+  closeReports();
+  // Group by floor
+  var byFloor = {};
+  products.forEach(function(p) {
+    var f = parseFloor(p.location) || 'Unassigned';
+    if (!byFloor[f]) byFloor[f] = [];
+    byFloor[f].push(p);
+  });
+
+  var floorKeys = FLOOR_ORDER.filter(function(f){ return byFloor[f]; });
+  if (byFloor['Unassigned']) floorKeys.push('Unassigned');
+
+  var subtitle = products.length + ' artworks across ' + floorKeys.length + ' floors';
+  var body = floorKeys.map(function(f) {
+    var items = byFloor[f].slice().sort(function(a,b){ return (a.zone||'').localeCompare(b.zone||''); });
+    var rows = items.map(function(p) {
+      return '<tr>' +
+        '<td class="mono">' + esc(p.zone||'—') + '</td>' +
+        '<td class="mono">' + esc(p.serial||'—') + '</td>' +
+        '<td><strong>' + esc(p.name||'—') + '</strong><br><em style="color:#5a6478">' + esc(p.artist||'') + '</em></td>' +
+        '<td>' + esc(p.location||'—') + '</td>' +
+        '<td class="mono">' + esc(p.transmitter||'—') + '</td>' +
+        '<td class="mono">' + esc(p.battery||'—') + '</td>' +
+        '<td class="mono">' + esc(p.batteryDate||'—') + '</td>' +
+        '<td style="font-size:10px;color:#5a6478">' + esc(p.comments||'') + '</td>' +
+      '</tr>';
+    }).join('');
+    return '<div class="floor-group">' +
+      '<div class="floor-heading">' + f + ' <span style="font-weight:400;font-size:12px;color:#5a6478">(' + items.length + ' artworks)</span></div>' +
+      '<table><thead><tr>' +
+        '<th>Zone</th><th>Serial</th><th>Artwork</th><th>Location</th>' +
+        '<th>Transmitter</th><th>Battery</th><th>Replaced</th><th>Notes</th>' +
+      '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+  }).join('');
+
+  var html = printHead('Full Inventory Report') +
+    reportHeader('Full Inventory Report', subtitle) +
+    body + printFooter();
+
+  var w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
+}
+
+// ── New Art Alarm Install Guide ──
+function printInstallGuide() {
+  closeReports();
+  var html = printHead('New Art Alarm Install Guide') +
+    reportHeader('New Art Alarm Install Guide', 'Field reference for technicians — keep with your install kit') +
+
+    '<div class="section-title">📸 Step 1 — Photo & Auto-fill</div>' +
+    '<div class="field-block">' +
+      '<div class="field-label">Pro Tip</div>' +
+      '<div style="font-size:12px;line-height:1.6">Name your photo file <strong>"Artwork Name by Artist Name"</strong> before uploading.<br>' +
+      'Example: <span class="mono">Harbour at Dusk by Jean-Michel Basquiat.jpg</span><br>' +
+      'ArtAlarm will auto-fill the Art Name and Artist fields from the filename.</div>' +
+    '</div>' +
+
+    '<div class="section-title">✏️ Step 2 — Required Fields</div>' +
+    '<div class="two-col">' +
+      '<div class="field-block"><div class="field-label">Art Name</div>' +
+        '<div class="field-value"></div>' +
+        '<div class="field-hint">As it appears on the artwork label or documentation</div></div>' +
+      '<div class="field-block"><div class="field-label">Artist</div>' +
+        '<div class="field-value"></div>' +
+        '<div class="field-hint">Full name — Last, First preferred</div></div>' +
+    '</div>' +
+    '<div class="field-block"><div class="field-label">Location in Building</div>' +
+      '<div class="field-value"></div>' +
+      '<div class="field-hint">⚠️ Always start with floor code: BSMT · 1FL · 1MEZZ · 2FL · 3FL · 4FL · 5FL · 5MEZZ · 6FL · 7FL · 8FL · 9FL · 10FL<br>' +
+      'Example: <span class="mono">5FL East Wall near elevator</span> or <span class="mono">2FL, Room 4, North Wall</span></div></div>' +
+
+    '<div class="section-title">⚙️ Step 3 — Optional Fields</div>' +
+    '<div class="three-col">' +
+      '<div class="field-block"><div class="field-label">Zone</div>' +
+        '<div class="field-value"></div>' +
+        '<div class="field-hint">Zone number from alarm panel e.g. 523</div></div>' +
+      '<div class="field-block"><div class="field-label">Serial #</div>' +
+        '<div class="field-value"></div>' +
+        '<div class="field-hint">Found on back of transmitter</div></div>' +
+      '<div class="field-block"><div class="field-label">Transmitter Model</div>' +
+        '<div class="field-value"></div>' +
+        '<div class="field-hint">1101 · 1106 · 1107<br>Battery type auto-fills on selection</div></div>' +
+    '</div>' +
+    '<div class="two-col">' +
+      '<div class="field-block"><div class="field-label">Install Date</div>' +
+        '<div class="field-value"></div>' +
+        '<div class="field-hint">Hit "Today" button for current date<br>Format: DD/MM/YYYY</div></div>' +
+      '<div class="field-block"><div class="field-label">Battery Replaced Date</div>' +
+        '<div class="field-value"></div>' +
+        '<div class="field-hint">Hit "Today" button — triggers 2yr service reminder</div></div>' +
+    '</div>' +
+
+    '<div class="section-title">💬 Step 4 — Condition Notes</div>' +
+    '<div class="field-block"><div class="field-label">Comments</div>' +
+      '<div class="field-value" style="min-height:40px"></div>' +
+      '<div class="field-hint">Condition on arrival, provenance notes, anything unusual</div></div>' +
+
+    '<div class="section-title" style="margin-top:20px">⚡ Quick Reference</div>' +
+    '<table><thead><tr><th>Transmitter</th><th>Battery Type</th><th>Service Cycle</th></tr></thead>' +
+    '<tbody>' +
+      '<tr><td class="mono">1101</td><td class="mono">CR123A</td><td>2 years (adaptive)</td></tr>' +
+      '<tr><td class="mono">1106</td><td class="mono">CR123A</td><td>2 years (adaptive)</td></tr>' +
+      '<tr><td class="mono">1107</td><td class="mono">CR2430</td><td>2 years (adaptive)</td></tr>' +
+    '</tbody></table>' +
+
+    printFooter();
+
+  var w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
+}
+
+function openSettings() {
+  closeMenu();
+  db.collection('users').doc(currentUserEmail).get().then(function(doc) {
+    var email = doc.exists ? (doc.data().notifyEmail || '') : '';
+    document.getElementById('s-notify-email').value = email;
+  });
+  document.getElementById('settings-overlay').classList.add('open');
+}
+
+function closeSettings() { document.getElementById('settings-overlay').classList.remove('open'); }
+
+function saveSettings() {
+  var notifyEmail = document.getElementById('s-notify-email').value.trim();
+  db.collection('users').doc(currentUserEmail).set({
+    notifyEmail: notifyEmail,
+    updatedAt: Date.now()
+  }, { merge: true })
+  .then(function() { showToast('Settings saved'); closeSettings(); })
+  .catch(function(e) { showToast('Error: ' + e.message); });
+}
+
+function openMenu()  { document.getElementById('menu-overlay').classList.add('open'); }
 function closeMenu() { document.getElementById('menu-overlay').classList.remove('open'); }
 
-var toastTimer=null;
-function showToast(msg) { var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); if(toastTimer) clearTimeout(toastTimer); toastTimer=setTimeout(function(){t.classList.remove('show');},2800); }
 
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
-function timeAgo(ts) { if(!ts) return ''; var d=Date.now()-ts,m=Math.floor(d/60000); if(m<1) return 'just now'; if(m<60) return m+'m ago'; var h=Math.floor(m/60); if(h<24) return h+'h ago'; return Math.floor(h/24)+'d ago'; }
+// ════════════════════════════════════════════════
+// UTILITIES
+// ════════════════════════════════════════════════
+
+function calcNextBatteryDue(history) {
+  // Needs at least 1 entry
+  if (!history || history.length === 0) return null;
+
+  // Parse DD/MM/YYYY to a timestamp
+  function parseDate(str) {
+    if (!str) return null;
+    var parts = str.split('/');
+    if (parts.length !== 3) return null;
+    return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0])).getTime();
+  }
+
+  var lastDate = parseDate(history[history.length - 1].date);
+  if (!lastDate) return null;
+
+  var cycleMs;
+  if (history.length === 1) {
+    // Only one replacement — default to 2 year cycle
+    cycleMs = 2 * 365.25 * 24 * 60 * 60 * 1000;
+  } else {
+    // Average the last 2 intervals
+    var prev    = parseDate(history[history.length - 2].date);
+    var current = parseDate(history[history.length - 1].date);
+    if (!prev || !current) return null;
+    cycleMs = current - prev;
+  }
+
+  return lastDate + cycleMs;
+}
+
+function formatNextDue(ts) {
+  if (!ts) return null;
+  var d = new Date(ts);
+  return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear();
+}
+
+function daysUntil(ts) {
+  if (!ts) return null;
+  return Math.ceil((ts - Date.now()) / (1000 * 60 * 60 * 24));
+}
+function autoFillBattery() {
+  var t = document.getElementById('f-transmitter').value;
+  var b = document.getElementById('f-battery');
+  if (t === '1101' || t === '1106') b.value = 'CR123A';
+  else if (t === '1107')            b.value = 'CR2430';
+}
+
+function pad(n) { return String(n).padStart(2, '0'); }
+
+function setTodayTransmitterDate() {
+  var d = new Date();
+  document.getElementById('f-transmitter-date').value = pad(d.getDate()) + '/' + pad(d.getMonth()+1) + '/' + d.getFullYear();
+}
+
+function setTodayDate() {
+  var d = new Date();
+  document.getElementById('f-battery-date').value = pad(d.getDate()) + '/' + pad(d.getMonth()+1) + '/' + d.getFullYear();
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2800);
+}
+
+function toTitleCase(s) { return s.replace(/\b\w/g, function(c){ return c.toUpperCase(); }); }
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function timeAgo(ts) {
+  if (!ts) return '';
+  var d = Date.now() - ts, m = Math.floor(d / 60000);
+  if (m < 1)  return 'just now';
+  if (m < 60) return m + 'm ago';
+  var h = Math.floor(m / 60);
+  if (h < 24) return h + 'h ago';
+  return Math.floor(h / 24) + 'd ago';
+}
+
 </script>
 </body>
 </html>
