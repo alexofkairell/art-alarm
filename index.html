@@ -438,8 +438,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn-cancel" onclick="clearNote()">Clear</button>
-      <button class="btn-save" onclick="saveNote()">Save Note</button>
+      <button class="btn-cancel" onclick="clearNote()">🗑 Clear</button>
+      <button class="btn-save" onclick="saveNote()">💬 Save Note</button>
     </div>
   </div>
 </div>
@@ -455,7 +455,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeDelete()">Cancel</button>
-      <button class="btn-del" onclick="confirmDelete()">Delete</button>
+      <button class="btn-del" onclick="confirmDelete()">🗑 Delete</button>
     </div>
   </div>
 </div>
@@ -665,7 +665,7 @@ function startApp() {
     products = [];
     snap.forEach(function(doc) { var d = doc.data(); d.id = doc.id; products.push(d); });
     render();
-  }, function() { showToast('Sync error'); });
+  }, function() { showToast('⚠️ Sync error — check connection'); });
 }
 
 
@@ -892,16 +892,16 @@ function renderGrid(items) {
       '<div class="card-body">' +
         '<div class="card-title-row"><div style="flex:1;min-width:0"><div class="card-name">' + esc(p.name||'') + '</div><div class="card-artist">by ' + esc(p.artist||'') + '</div></div>' + zoneHtml + '</div>' +
         '<div class="card-meta">' +
-          '<div class="meta-pair-row"><div class="meta-cell"><span class="meta-cell-label">Serial</span><span class="meta-cell-val">' + esc(p.serial||'-') + '</span></div><div class="meta-cell"><span class="meta-cell-label">Location</span><span class="meta-cell-val">' + esc(p.location||'-') + '</span></div></div>' +
-          '<div class="meta-pair-row"><div class="meta-cell"><span class="meta-cell-label">Transmitter</span><span class="meta-cell-val">' + esc(p.transmitter||'-') + '</span></div><div class="meta-cell"><span class="meta-cell-label">Installed ' + txHistBtn + '</span><span class="meta-cell-val">' + esc(p.transmitterDate||'-') + '</span></div></div>' +
-          '<div class="meta-pair-row"><div class="meta-cell"><span class="meta-cell-label">Battery</span><span class="meta-cell-val">' + esc(p.battery||'-') + '</span></div><div class="meta-cell"><span class="meta-cell-label">Replaced ' + batHistBtn + '</span><span class="meta-cell-val">' + esc(p.batteryDate||'-') + '</span></div></div>' +
+          '<div class="meta-pair-row"><div class="meta-cell"><span class="meta-cell-label">🔢 Serial</span><span class="meta-cell-val">' + esc(p.serial||'-') + '</span></div><div class="meta-cell"><span class="meta-cell-label">📍 Location</span><span class="meta-cell-val">' + esc(p.location||'-') + '</span></div></div>' +
+          '<div class="meta-pair-row"><div class="meta-cell"><span class="meta-cell-label">📡 Transmitter</span><span class="meta-cell-val">' + esc(p.transmitter||'-') + '</span></div><div class="meta-cell"><span class="meta-cell-label">📅 Installed ' + txHistBtn + '</span><span class="meta-cell-val">' + esc(p.transmitterDate||'-') + '</span></div></div>' +
+          '<div class="meta-pair-row"><div class="meta-cell"><span class="meta-cell-label">🔋 Battery</span><span class="meta-cell-val">' + esc(p.battery||'-') + '</span></div><div class="meta-cell"><span class="meta-cell-label">📅 Replaced ' + batHistBtn + '</span><span class="meta-cell-val">' + esc(p.batteryDate||'-') + '</span></div></div>' +
         '</div>' +
         '<div class="' + commentClass + '" ' + commentClick + '>' + commentText + '</div>' +
         byline +
         '<div class="card-actions">' +
-          '<button class="card-action-btn" onclick="editProduct(\'' + p.id + '\')">Edit</button>' +
-          '<button class="card-action-btn" onclick="openNote(\'' + p.id + '\')">Note</button>' +
-          '<button class="card-action-btn del" onclick="openDelete(\'' + p.id + '\')">Delete</button>' +
+          '<button class="card-action-btn" onclick="editProduct(\'' + p.id + '\')">✏️ Edit</button>' +
+          '<button class="card-action-btn" onclick="openNote(\'' + p.id + '\')">💬 Note</button>' +
+          '<button class="card-action-btn del" onclick="openDelete(\'' + p.id + '\')">🗑️ Delete</button>' +
         '</div>' +
       '</div></div>';
   }).join('');
@@ -921,9 +921,9 @@ function renderList(items) {
       '<div class="list-serial lr-serial">' + esc(p.serial||'') + '</div>' +
       '<div class="list-location lr-loc">' + esc(p.location||'') + '</div>' +
       '<div class="list-actions lr-act">' +
-        '<button class="list-act-btn" onclick="editProduct(\'' + p.id + '\')">Edit</button>' +
-        '<button class="list-act-btn" onclick="openNote(\'' + p.id + '\')">Note</button>' +
-        '<button class="list-act-btn del" onclick="openDelete(\'' + p.id + '\')">Del</button>' +
+        '<button class="list-act-btn" onclick="editProduct(\'' + p.id + '\')" title="Edit">✏️</button>' +
+        '<button class="list-act-btn" onclick="openNote(\'' + p.id + '\')" title="Note">💬</button>' +
+        '<button class="list-act-btn del" onclick="openDelete(\'' + p.id + '\')" title="Delete">🗑️</button>' +
       '</div></div>';
   }).join('');
 }
@@ -984,7 +984,7 @@ function saveProduct() {
   var name       = document.getElementById('f-name').value.trim();
   var artist     = document.getElementById('f-artist').value.trim();
   var location   = document.getElementById('f-location').value.trim();
-  if (!name || !artist || !location) { showToast('Please fill all required fields'); return; }
+  if (!name || !artist || !location) { showToast('⚠️ Please fill all required fields'); return; }
   var now        = Date.now();
   var batteryDate = document.getElementById('f-battery-date').value.trim();
   var data = {
@@ -1029,13 +1029,13 @@ function saveProduct() {
 
   if (editingId) {
     db.collection('products').doc(editingId).update(data)
-      .then(function(){ showToast('Artwork updated'); })
-      .catch(function(e){ showToast('Error: ' + e.message); });
+      .then(function(){ showToast('✅ Artwork updated'); })
+      .catch(function(e){ showToast('❌ Error: ' + e.message); });
   } else {
     data.created = now;
     db.collection('products').add(data)
-      .then(function(){ showToast('Artwork added'); })
-      .catch(function(e){ showToast('Error: ' + e.message); });
+      .then(function(){ showToast('✅ Artwork added'); })
+      .catch(function(e){ showToast('❌ Error: ' + e.message); });
   }
   closeModal();
 }
@@ -1053,8 +1053,8 @@ function closeDelete() { document.getElementById('delete-overlay').classList.rem
 function confirmDelete() {
   if (!deletingId) return;
   db.collection('products').doc(deletingId).delete()
-    .then(function(){ showToast('Artwork deleted'); })
-    .catch(function(e){ showToast('Error: ' + e.message); });
+    .then(function(){ showToast('🗑️ Artwork deleted'); })
+    .catch(function(e){ showToast('❌ Error: ' + e.message); });
   closeDelete();
 }
 
@@ -1080,8 +1080,8 @@ function saveNote() {
   if (!noteId) return;
   var text = document.getElementById('note-text').value.trim();
   db.collection('products').doc(noteId).update({ comments: text, editedBy: currentUser, editedAt: Date.now() })
-    .then(function(){ showToast('Note saved'); })
-    .catch(function(e){ showToast('Error: ' + e.message); });
+    .then(function(){ showToast('💬 Note saved'); })
+      .catch(function(e){ showToast('❌ Error: ' + e.message); });
   closeNote();
 }
 
