@@ -217,18 +217,18 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .maint-stat { flex: 1; padding: 12px 8px; text-align: center; border-right: 1px solid var(--border); }
 .maint-stat:last-child { border-right: none; }
 .maint-stat-num { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; line-height: 1; }
-.maint-stat-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text2); margin-top: 2px; }
+.maint-stat-label { font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text2); margin-top: 2px; }
 .maint-filter-btn { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; border: 1.5px solid var(--border); background: #fafaf9; color: var(--text2); cursor: pointer; transition: all 0.12s; }
 .maint-filter-btn.active { background: var(--navy); border-color: var(--navy); color: #fff; }
 .maint-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--border); }
 .maint-row:last-child { border-bottom: none; }
 .maint-status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .maint-row-info { flex: 1; min-width: 0; }
-.maint-row-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.maint-row-meta { font-size: 11px; color: var(--text2); margin-top: 1px; }
+.maint-row-name { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.maint-row-meta { font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--text2); margin-top: 2px; }
 .maint-row-due { flex-shrink: 0; text-align: right; }
-.maint-due-date { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; }
-.maint-due-days { font-size: 10px; font-weight: 700; margin-top: 1px; }
+.maint-due-date { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: var(--text2); }
+.maint-due-days { font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 600; margin-top: 2px; }
 .status-overdue { background: #ff477e; }
 .status-soon    { background: #f59e0b; }
 .status-ok      { background: #10b981; }
@@ -1249,8 +1249,7 @@ function renderMaintenance() {
     }
     var floorLabel    = floor || 'No Floor';
     var locationLabel = locationStr || 'No Location';
-    var zoneLabel     = p.zone ? 'Zone ' + p.zone : 'No Zone';
-    return '<div class="maint-row">' +
+    var zoneLabel     = p.zone ? 'Zone ' + p.zone : 'No Zone';    return '<div class="maint-row">' +
       '<div class="maint-row-info">' +
         '<div class="maint-row-name">' + esc(floorLabel) + ' · ' + esc(locationLabel) + ' · ' + esc(zoneLabel) + '</div>' +
         '<div class="maint-row-meta">' + esc(p.name||'') + ' · ' + esc(p.battery||'—') + '</div>' +
