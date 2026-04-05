@@ -613,7 +613,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <div id="eventlog-list" style="max-height:560px;overflow-y:auto"></div>
     </div>
   </div>
-</div> onclick="if(event.target===this)closeMaintenance()">
+</div>
+
+<div class="modal-overlay" id="maint-overlay" onclick="if(event.target===this)closeMaintenance()">
   <div class="modal-box" style="max-width:640px" onclick="event.stopPropagation()">
     <div class="modal-header" style="background:#e67e22">
       <div class="modal-title">🔋 Maintenance Dashboard</div>
