@@ -497,7 +497,18 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <div class="field-group">
         <div class="field-label">Available Reports</div>
         <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
-          <button class="report-btn" onclick="printBatteryWorksheet()">🔋 Battery Replacement Worksheet</button>
+
+          <div style="border:1.5px solid var(--border);border-radius:10px;overflow:hidden;background:#fafaf9;">
+            <div style="padding:12px 14px;font-size:14px;font-weight:500;color:var(--text);border-bottom:1px solid var(--border);">🔋 Battery Replacement Worksheet</div>
+            <div style="padding:10px 14px;display:flex;align-items:center;gap:10px;">
+              <span style="font-size:12px;color:var(--text2);white-space:nowrap;">Floor:</span>
+              <select class="field-input" id="report-battery-floor" style="flex:1;padding:6px 10px;font-size:13px;margin:0">
+                <option value="all">All Floors</option>
+              </select>
+              <button class="btn-save" style="white-space:nowrap;padding:8px 16px;font-size:13px" onclick="printBatteryWorksheet()">Print</button>
+            </div>
+          </div>
+
           <button class="report-btn" onclick="printInventoryReport()">🖼️ Full Inventory Report</button>
           <button class="report-btn" onclick="printInstallGuide()">📋 New Art Alarm Install Guide</button>
         </div>
@@ -1276,7 +1287,20 @@ function renderMaintenance() {
   }).join('');
 }
 
-function openReports()  { closeMenu(); document.getElementById('reports-overlay').classList.add('open'); }
+function openReports() {
+  closeMenu();
+  // Populate floor dropdown with floors that have artworks
+  var usedFloors = [];
+  products.forEach(function(p) {
+    var f = parseFloor(p.location);
+    if (f && usedFloors.indexOf(f) === -1) usedFloors.push(f);
+  });
+  usedFloors.sort(function(a, b) { return FLOOR_ORDER.indexOf(a) - FLOOR_ORDER.indexOf(b); });
+  var sel = document.getElementById('report-battery-floor');
+  sel.innerHTML = '<option value="all">All Floors</option>' +
+    usedFloors.map(function(f) { return '<option value="' + f + '">' + f + '</option>'; }).join('');
+  document.getElementById('reports-overlay').classList.add('open');
+}
 function closeReports() { document.getElementById('reports-overlay').classList.remove('open'); }
 
 
@@ -1341,18 +1365,26 @@ function reportHeader(title, subtitle) {
 // ── Battery Replacement Worksheet ──
 function printBatteryWorksheet() {
   closeReports();
+  var selectedFloor = document.getElementById('report-battery-floor').value;
   var statusOrder = { overdue: 0, soon: 1, ok: 2, unknown: 3 };
-  var sorted = products.slice().sort(function(a, b) {
-    var sA = getMaintStatus(a), sB = getMaintStatus(b);
-    if (statusOrder[sA] !== statusOrder[sB]) return statusOrder[sA] - statusOrder[sB];
-    var fA = parseFloor(a.location)||'ZZZ', fB = parseFloor(b.location)||'ZZZ';
-    if (fA !== fB) return FLOOR_ORDER.indexOf(fA) - FLOOR_ORDER.indexOf(fB);
-    return (a.zone||'').localeCompare(b.zone||'');
-  });
+  var sorted = products.slice()
+    .filter(function(p) {
+      if (!p.zone || p.zone.trim() === '') return false; // exclude unzoned
+      if (selectedFloor === 'all') return true;
+      return parseFloor(p.location) === selectedFloor;
+    })
+    .sort(function(a, b) {
+      var sA = getMaintStatus(a), sB = getMaintStatus(b);
+      if (statusOrder[sA] !== statusOrder[sB]) return statusOrder[sA] - statusOrder[sB];
+      var fA = parseFloor(a.location)||'ZZZ', fB = parseFloor(b.location)||'ZZZ';
+      if (fA !== fB) return FLOOR_ORDER.indexOf(fA) - FLOOR_ORDER.indexOf(fB);
+      return (a.zone||'').localeCompare(b.zone||'');
+    });
 
-  var overdue = sorted.filter(function(p){ return getMaintStatus(p)==='overdue'; }).length;
-  var soon    = sorted.filter(function(p){ return getMaintStatus(p)==='soon'; }).length;
-  var subtitle = sorted.length + ' artworks · ' + overdue + ' overdue · ' + soon + ' due within 30 days';
+  var overdue  = sorted.filter(function(p){ return getMaintStatus(p)==='overdue'; }).length;
+  var soon     = sorted.filter(function(p){ return getMaintStatus(p)==='soon'; }).length;
+  var floorLbl = selectedFloor === 'all' ? 'All Floors' : selectedFloor;
+  var subtitle = floorLbl + ' · ' + sorted.length + ' artworks · ' + overdue + ' overdue · ' + soon + ' due within 30 days';
 
   var rows = sorted.map(function(p) {
     var status  = getMaintStatus(p);
