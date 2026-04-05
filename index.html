@@ -1675,6 +1675,9 @@ function saveSettings() {
   .catch(function(e) { showToast('❌ Error: ' + e.message); });
 }
 
+function openMenu()  { document.getElementById('menu-overlay').classList.add('open'); }
+function closeMenu() { document.getElementById('menu-overlay').classList.remove('open'); }
+
 function openEventLog() {
   closeMenu();
   document.getElementById('eventlog-list').innerHTML = '<div style="padding:24px;text-align:center;color:var(--text2);font-size:13px">Loading...</div>';
