@@ -650,9 +650,15 @@ function getZoneColor() { return '#ff5c1a'; }
     if (user) {
       checkEl.style.display = 'flex';
       errEl.style.display   = 'none';
-      user.getIdTokenResult().then(function() {
+      var email = user.email.toLowerCase();
+      // Check whitelist before allowing access
+      db.collection('whitelist').doc(email).get().then(function(doc) {
+        if (!doc.exists || doc.data().allowed !== true) {
+          showLoginError('Access denied. Your account is not authorised to use ArtAlarm.');
+          return;
+        }
         currentUser      = user.displayName || user.email;
-        currentUserEmail = user.email.toLowerCase();
+        currentUserEmail = email;
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('app-wrap').style.display     = 'block';
         startApp();
