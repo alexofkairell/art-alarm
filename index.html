@@ -1194,7 +1194,8 @@ function saveMove() {
     .catch(function(e){ showToast('❌ Error: ' + e.message); });
   closeMove();
 }
-  var p = products.find(function(x){ return x.id === id; });
+
+function openDelete(id) {
   if (!p) return;
   deletingId = id;
   document.getElementById('del-name-label').textContent = p.name || 'this artwork';
