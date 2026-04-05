@@ -508,7 +508,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <button class="btn-save" style="background:var(--teal)" onclick="saveMove()">📦 Confirm Move</button>
     </div>
   </div>
-</div> onclick="if(event.target===this)closeMenu()">
+</div>
+
+<div class="modal-overlay" id="menu-overlay" onclick="if(event.target===this)closeMenu()">
   <div class="menu-box" onclick="event.stopPropagation()">
     <div class="menu-user">
       <div class="menu-avatar" id="menu-avatar">?</div>
