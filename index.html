@@ -127,6 +127,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .card-actions { display: flex; gap: 6px; border-top: 1px solid var(--border); padding-top: 10px; }
 .card-action-btn { flex: 1; padding: 7px 4px; border: 1.5px solid var(--border); border-radius: 8px; background: none; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; color: var(--text); }
 .card-action-btn.del { color: var(--pink); }
+.card-action-btn.move { color: var(--teal); }
 
 #product-list { display: none; }
 .list-header, .list-row { display: grid; grid-template-columns: 60px 1fr 120px 140px 1fr 100px; align-items: center; gap: 12px; padding: 10px 14px; }
@@ -233,6 +234,12 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .status-soon    { background: #f59e0b; }
 .status-ok      { background: #10b981; }
 .status-unknown { background: #d1d5db; }
+.event-row { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.event-row:last-child { border-bottom: none; }
+.event-row-title { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.event-row-detail { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text2); margin-bottom: 2px; }
+.event-row-meta { font-size: 11px; color: var(--text2); }
+.event-row-notes { font-size: 11px; font-style: italic; color: var(--text2); margin-top: 4px; }
 .menu-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 14px 20px; border: none; background: none; font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; text-align: left; }
 .menu-item.settings-item { color: var(--text); border-bottom: 1px solid var(--border); }
 .menu-item.settings-item:hover { background: #f5f5f5; }
@@ -471,7 +478,37 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   </div>
 </div>
 
-<div class="modal-overlay" id="menu-overlay" onclick="if(event.target===this)closeMenu()">
+<div class="modal-overlay" id="move-overlay" onclick="if(event.target===this)closeMove()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header" style="background:var(--teal)">
+      <div class="modal-title">📦 Move Artwork</div>
+      <button class="modal-close" onclick="closeMove()">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-group">
+        <div class="field-label">Artwork</div>
+        <div id="move-artwork-label" style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text);padding:10px 14px;background:#f7f5f1;border-radius:10px;"></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">From</div>
+        <div id="move-from-label" style="font-family:'DM Mono',monospace;font-size:13px;color:var(--text2);padding:10px 14px;background:#f7f5f1;border-radius:10px;"></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">New Location</div>
+        <input class="field-input" id="move-to" type="text" placeholder="e.g. 5FL East Gallery">
+        <div style="font-size:11px;color:var(--text2);margin-top:6px;">⚠️ Start with floor code: BSMT · 1FL · 1MEZZ · 2FL · 3FL · 4FL · 5FL · 5MEZZ · 6FL · 7FL · 8FL · 9FL · 10FL</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Notes <span class="badge-opt">Optional</span></div>
+        <textarea class="field-textarea" id="move-notes" placeholder="Reason for move, exhibition name, etc." style="min-height:60px"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeMove()">Cancel</button>
+      <button class="btn-save" style="background:var(--teal)" onclick="saveMove()">📦 Confirm Move</button>
+    </div>
+  </div>
+</div> onclick="if(event.target===this)closeMenu()">
   <div class="menu-box" onclick="event.stopPropagation()">
     <div class="menu-user">
       <div class="menu-avatar" id="menu-avatar">?</div>
@@ -483,6 +520,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     <button class="menu-item settings-item" onclick="openSettings()">⚙️ Settings</button>
     <button class="menu-item settings-item" onclick="openReports()">🖨️ Reports</button>
     <button class="menu-item settings-item" onclick="openMaintenance()">🔋 Maintenance</button>
+    <button class="menu-item settings-item" onclick="openEventLog()">📋 Event Log</button>
     <button class="menu-item" onclick="signOut()">Sign Out</button>
   </div>
 </div>
@@ -563,7 +601,17 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   </div>
 </div>
 
-<div class="modal-overlay" id="maint-overlay" onclick="if(event.target===this)closeMaintenance()">
+<div class="modal-overlay" id="eventlog-overlay" onclick="if(event.target===this)closeEventLog()">
+  <div class="modal-box" style="max-width:640px" onclick="event.stopPropagation()">
+    <div class="modal-header" style="background:var(--teal)">
+      <div class="modal-title">📋 Event Log</div>
+      <button class="modal-close" onclick="closeEventLog()">&#10005;</button>
+    </div>
+    <div class="modal-body" style="padding:0">
+      <div id="eventlog-list" style="max-height:560px;overflow-y:auto"></div>
+    </div>
+  </div>
+</div> onclick="if(event.target===this)closeMaintenance()">
   <div class="modal-box" style="max-width:640px" onclick="event.stopPropagation()">
     <div class="modal-header" style="background:#e67e22">
       <div class="modal-title">🔋 Maintenance Dashboard</div>
@@ -956,6 +1004,7 @@ function renderGrid(items) {
         '<div class="card-actions">' +
           '<button class="card-action-btn" onclick="editProduct(\'' + p.id + '\')">✏️ Edit</button>' +
           '<button class="card-action-btn" onclick="openNote(\'' + p.id + '\')">💬 Note</button>' +
+          '<button class="card-action-btn move" onclick="openMove(\'' + p.id + '\')">📦 Move</button>' +
           '<button class="card-action-btn del" onclick="openDelete(\'' + p.id + '\')">🗑️ Delete</button>' +
         '</div>' +
       '</div></div>';
@@ -1095,7 +1144,56 @@ function saveProduct() {
   closeModal();
 }
 
-function openDelete(id) {
+var movingId = null;
+
+function openMove(id) {
+  var p = products.find(function(x){ return x.id === id; });
+  if (!p) return;
+  movingId = id;
+  document.getElementById('move-artwork-label').textContent = (p.name||'') + ' by ' + (p.artist||'');
+  document.getElementById('move-from-label').textContent    = p.location || 'No location set';
+  document.getElementById('move-to').value                  = '';
+  document.getElementById('move-notes').value               = '';
+  document.getElementById('move-overlay').classList.add('open');
+}
+
+function closeMove() { document.getElementById('move-overlay').classList.remove('open'); }
+
+function saveMove() {
+  if (!movingId) return;
+  var p          = products.find(function(x){ return x.id === movingId; });
+  if (!p) return;
+  var newLocation = document.getElementById('move-to').value.trim();
+  var notes       = document.getElementById('move-notes').value.trim();
+  if (!newLocation) { showToast('⚠️ Please enter a new location'); return; }
+  var now = Date.now();
+
+  // Write event to events collection
+  var eventData = {
+    artworkId:    movingId,
+    artworkName:  p.name || '',
+    artist:       p.artist || '',
+    zone:         p.zone || '',
+    fromLocation: p.location || '',
+    toLocation:   newLocation,
+    movedBy:      currentUserEmail,
+    movedAt:      now,
+    notes:        notes
+  };
+
+  // Update artwork location and log event simultaneously
+  var batch = db.batch();
+  batch.update(db.collection('products').doc(movingId), {
+    location: newLocation,
+    editedBy: currentUser,
+    editedAt: now
+  });
+  batch.set(db.collection('events').doc(), eventData);
+  batch.commit()
+    .then(function(){ showToast('📦 Artwork moved'); })
+    .catch(function(e){ showToast('❌ Error: ' + e.message); });
+  closeMove();
+}
   var p = products.find(function(x){ return x.id === id; });
   if (!p) return;
   deletingId = id;
@@ -1572,8 +1670,33 @@ function saveSettings() {
   .catch(function(e) { showToast('❌ Error: ' + e.message); });
 }
 
-function openMenu()  { document.getElementById('menu-overlay').classList.add('open'); }
-function closeMenu() { document.getElementById('menu-overlay').classList.remove('open'); }
+function openEventLog() {
+  closeMenu();
+  document.getElementById('eventlog-list').innerHTML = '<div style="padding:24px;text-align:center;color:var(--text2);font-size:13px">Loading...</div>';
+  document.getElementById('eventlog-overlay').classList.add('open');
+  db.collection('events').orderBy('movedAt', 'desc').limit(100).get().then(function(snap) {
+    if (snap.empty) {
+      document.getElementById('eventlog-list').innerHTML = '<div style="padding:32px;text-align:center;color:var(--text2);font-size:13px">No events logged yet.</div>';
+      return;
+    }
+    document.getElementById('eventlog-list').innerHTML = snap.docs.map(function(doc) {
+      var e = doc.data();
+      var d = new Date(e.movedAt);
+      var dateStr = pad(d.getDate()) + '/' + pad(d.getMonth()+1) + '/' + d.getFullYear() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+      return '<div class="event-row">' +
+        '<div class="event-row-title">📦 ' + esc(e.artworkName||'') + (e.zone ? ' · Zone ' + esc(e.zone) : '') + '</div>' +
+        '<div class="event-row-detail">From: ' + esc(e.fromLocation||'—') + '</div>' +
+        '<div class="event-row-detail">To: ' + esc(e.toLocation||'—') + '</div>' +
+        (e.notes ? '<div class="event-row-notes">"' + esc(e.notes) + '"</div>' : '') +
+        '<div class="event-row-meta">' + esc(e.movedBy||'') + ' · ' + dateStr + '</div>' +
+      '</div>';
+    }).join('');
+  }).catch(function(e) {
+    document.getElementById('eventlog-list').innerHTML = '<div style="padding:24px;text-align:center;color:var(--pink);font-size:13px">Error loading events: ' + e.message + '</div>';
+  });
+}
+
+function closeEventLog() { document.getElementById('eventlog-overlay').classList.remove('open'); }
 
 
 // ════════════════════════════════════════════════
