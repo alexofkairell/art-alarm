@@ -654,7 +654,7 @@ function getZoneColor() { return '#ff5c1a'; }
       // Check whitelist before allowing access
       db.collection('whitelist').doc(email).get().then(function(doc) {
         if (!doc.exists || doc.data().allowed !== true) {
-          showLoginError('Access denied. Your account is not authorised to use ArtAlarm.');
+          showLoginError('Access denied. Your account (' + email + ') is not authorised.');
           return;
         }
         currentUser      = user.displayName || user.email;
@@ -663,7 +663,8 @@ function getZoneColor() { return '#ff5c1a'; }
         document.getElementById('app-wrap').style.display     = 'block';
         startApp();
       }).catch(function(e) {
-        showLoginError('Auth error: ' + e.message);
+        // Show the actual Firestore error so we can diagnose it
+        showLoginError('Whitelist check failed: ' + e.code + ' — ' + e.message);
       });
     } else {
       if (unsubscribe) { unsubscribe(); unsubscribe = null; }
@@ -699,7 +700,10 @@ function showLoginError(msg) {
   el.textContent = msg;
   el.style.display = 'block';
   document.getElementById('login-checking').style.display = 'none';
-  auth.signOut();
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app-wrap').style.display = 'none';
+  // Delay signout so error message stays visible
+  setTimeout(function() { auth.signOut(); }, 3000);
 }
 
 function signOut() {
