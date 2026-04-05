@@ -240,6 +240,14 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .event-row-detail { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text2); margin-bottom: 2px; }
 .event-row-meta { font-size: 11px; color: var(--text2); }
 .event-row-notes { font-size: 11px; font-style: italic; color: var(--text2); margin-top: 4px; }
+.event-filter-btn { padding: 5px 11px; border-radius: 20px; font-size: 11px; font-weight: 600; border: 1.5px solid var(--border); background: #fafaf9; color: var(--text2); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
+.event-filter-btn.active { background: var(--teal); border-color: var(--teal); color: #fff; }
+.event-type-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; color: #fff; margin-right: 6px; }
+.badge-move        { background: var(--teal); }
+.badge-alarm       { background: #e53e3e; }
+.badge-battery     { background: #f59e0b; }
+.badge-transmitter { background: var(--purple); }
+.badge-new         { background: var(--orange); }
 .menu-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 14px 20px; border: none; background: none; font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; text-align: left; }
 .menu-item.settings-item { color: var(--text); border-bottom: 1px solid var(--border); }
 .menu-item.settings-item:hover { background: #f5f5f5; }
@@ -609,8 +617,16 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <div class="modal-title">📋 Event Log</div>
       <button class="modal-close" onclick="closeEventLog()">&#10005;</button>
     </div>
+    <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap;">
+      <button class="event-filter-btn active" onclick="setEventFilter('all')">All</button>
+      <button class="event-filter-btn" onclick="setEventFilter('move')">📦 Moves</button>
+      <button class="event-filter-btn" onclick="setEventFilter('alarm')">🚨 Alarms</button>
+      <button class="event-filter-btn" onclick="setEventFilter('battery')">🔋 Battery</button>
+      <button class="event-filter-btn" onclick="setEventFilter('transmitter')">📡 Transmitter</button>
+      <button class="event-filter-btn" onclick="setEventFilter('new')">🖼️ New Art</button>
+    </div>
     <div class="modal-body" style="padding:0">
-      <div id="eventlog-list" style="max-height:560px;overflow-y:auto"></div>
+      <div id="eventlog-list" style="max-height:500px;overflow-y:auto"></div>
     </div>
   </div>
 </div>
@@ -1137,12 +1153,32 @@ function saveProduct() {
 
   if (editingId) {
     db.collection('products').doc(editingId).update(data)
-      .then(function(){ showToast('✅ Artwork updated'); })
+      .then(function(){
+        showToast('✅ Artwork updated');
+        // Log battery event if date changed
+        if (batteryDate) {
+          var existing = products.find(function(x){ return x.id === editingId; }) || {};
+          if (batteryDate !== existing.batteryDate) {
+            db.collection('events').add({ eventType: 'battery', artworkId: editingId, artworkName: data.name, zone: data.zone, battery: data.battery, batteryDate: batteryDate, movedBy: currentUserEmail, movedAt: now });
+          }
+        }
+        // Log transmitter event if date changed
+        if (data.transmitterDate) {
+          var existing2 = products.find(function(x){ return x.id === editingId; }) || {};
+          if (data.transmitterDate !== existing2.transmitterDate) {
+            db.collection('events').add({ eventType: 'transmitter', artworkId: editingId, artworkName: data.name, zone: data.zone, transmitter: data.transmitter, transmitterDate: data.transmitterDate, movedBy: currentUserEmail, movedAt: now });
+          }
+        }
+      })
       .catch(function(e){ showToast('❌ Error: ' + e.message); });
   } else {
     data.created = now;
     db.collection('products').add(data)
-      .then(function(){ showToast('✅ Artwork added'); })
+      .then(function(docRef){
+        showToast('✅ Artwork added');
+        // Log new art event
+        db.collection('events').add({ eventType: 'new', artworkId: docRef.id, artworkName: data.name, artist: data.artist, zone: data.zone, toLocation: data.location, movedBy: currentUserEmail, movedAt: now });
+      })
       .catch(function(e){ showToast('❌ Error: ' + e.message); });
   }
   closeModal();
@@ -1174,6 +1210,7 @@ function saveMove() {
 
   // Write event to events collection
   var eventData = {
+    eventType:    'move',
     artworkId:    movingId,
     artworkName:  p.name || '',
     artist:       p.artist || '',
@@ -1298,7 +1335,8 @@ function autoFillFromFilename(fn) {
 // MENU & SETTINGS
 // ════════════════════════════════════════════════
 
-var maintFilter = 'all';
+var maintFilter  = 'all';
+var eventFilter  = 'all';
 
 function openMaintenance() {
   closeMenu();
@@ -1680,31 +1718,79 @@ function closeMenu() { document.getElementById('menu-overlay').classList.remove(
 
 function openEventLog() {
   closeMenu();
-  document.getElementById('eventlog-list').innerHTML = '<div style="padding:24px;text-align:center;color:var(--text2);font-size:13px">Loading...</div>';
+  eventFilter = 'all';
+  // Reset filter buttons
+  document.querySelectorAll('.event-filter-btn').forEach(function(btn) {
+    btn.classList.toggle('active', btn.getAttribute('onclick').indexOf("'all'") !== -1);
+  });
+  renderEventLog();
   document.getElementById('eventlog-overlay').classList.add('open');
-  db.collection('events').orderBy('movedAt', 'desc').limit(100).get().then(function(snap) {
+}
+
+function closeEventLog() { document.getElementById('eventlog-overlay').classList.remove('open'); }
+
+function setEventFilter(f) {
+  eventFilter = f;
+  document.querySelectorAll('.event-filter-btn').forEach(function(btn) {
+    btn.classList.toggle('active', btn.getAttribute('onclick').indexOf("'" + f + "'") !== -1);
+  });
+  renderEventLog();
+}
+
+var EVENT_CONFIG = {
+  move:        { label: 'Move',        badge: 'badge-move',        icon: '📦' },
+  alarm:       { label: 'Alarm',       badge: 'badge-alarm',       icon: '🚨' },
+  battery:     { label: 'Battery',     badge: 'badge-battery',     icon: '🔋' },
+  transmitter: { label: 'Transmitter', badge: 'badge-transmitter', icon: '📡' },
+  new:         { label: 'New Art',     badge: 'badge-new',         icon: '🖼️' }
+};
+
+function renderEventLog() {
+  document.getElementById('eventlog-list').innerHTML = '<div style="padding:24px;text-align:center;color:var(--text2);font-size:13px">Loading...</div>';
+  var query = db.collection('events').orderBy('movedAt', 'desc').limit(200);
+  query.get().then(function(snap) {
     if (snap.empty) {
       document.getElementById('eventlog-list').innerHTML = '<div style="padding:32px;text-align:center;color:var(--text2);font-size:13px">No events logged yet.</div>';
       return;
     }
-    document.getElementById('eventlog-list').innerHTML = snap.docs.map(function(doc) {
-      var e = doc.data();
-      var d = new Date(e.movedAt);
+    var docs = snap.docs.filter(function(doc) {
+      if (eventFilter === 'all') return true;
+      return (doc.data().eventType || 'move') === eventFilter;
+    });
+    if (docs.length === 0) {
+      document.getElementById('eventlog-list').innerHTML = '<div style="padding:32px;text-align:center;color:var(--text2);font-size:13px">No events of this type yet.</div>';
+      return;
+    }
+    document.getElementById('eventlog-list').innerHTML = docs.map(function(doc) {
+      var e       = doc.data();
+      var type    = e.eventType || 'move';
+      var cfg     = EVENT_CONFIG[type] || EVENT_CONFIG.move;
+      var d       = new Date(e.movedAt);
       var dateStr = pad(d.getDate()) + '/' + pad(d.getMonth()+1) + '/' + d.getFullYear() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+      var detail  = '';
+      if (type === 'move') {
+        detail = '<div class="event-row-detail">From: ' + esc(e.fromLocation||'—') + '</div>' +
+                 '<div class="event-row-detail">To: ' + esc(e.toLocation||'—') + '</div>';
+      } else if (type === 'battery') {
+        detail = '<div class="event-row-detail">Battery: ' + esc(e.battery||'—') + ' · Replaced: ' + esc(e.batteryDate||'—') + '</div>';
+      } else if (type === 'transmitter') {
+        detail = '<div class="event-row-detail">Transmitter: ' + esc(e.transmitter||'—') + ' · Installed: ' + esc(e.transmitterDate||'—') + '</div>';
+      } else if (type === 'alarm') {
+        detail = '<div class="event-row-detail">Zone: ' + esc(e.zone||'—') + ' · Signal: ' + esc(e.signal||'—') + '</div>';
+      } else if (type === 'new') {
+        detail = '<div class="event-row-detail">Location: ' + esc(e.toLocation||'—') + ' · Zone: ' + esc(e.zone||'—') + '</div>';
+      }
       return '<div class="event-row">' +
-        '<div class="event-row-title">📦 ' + esc(e.artworkName||'') + (e.zone ? ' · Zone ' + esc(e.zone) : '') + '</div>' +
-        '<div class="event-row-detail">From: ' + esc(e.fromLocation||'—') + '</div>' +
-        '<div class="event-row-detail">To: ' + esc(e.toLocation||'—') + '</div>' +
+        '<div class="event-row-title"><span class="event-type-badge ' + cfg.badge + '">' + cfg.icon + ' ' + cfg.label + '</span>' + esc(e.artworkName||'') + '</div>' +
+        detail +
         (e.notes ? '<div class="event-row-notes">"' + esc(e.notes) + '"</div>' : '') +
         '<div class="event-row-meta">' + esc(e.movedBy||'') + ' · ' + dateStr + '</div>' +
       '</div>';
     }).join('');
   }).catch(function(e) {
-    document.getElementById('eventlog-list').innerHTML = '<div style="padding:24px;text-align:center;color:var(--pink);font-size:13px">Error loading events: ' + e.message + '</div>';
+    document.getElementById('eventlog-list').innerHTML = '<div style="padding:24px;text-align:center;color:var(--pink);font-size:13px">Error: ' + e.message + '</div>';
   });
 }
-
-function closeEventLog() { document.getElementById('eventlog-overlay').classList.remove('open'); }
 
 
 // ════════════════════════════════════════════════
