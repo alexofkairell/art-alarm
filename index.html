@@ -256,6 +256,95 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--navy); color: #fff; padding: 12px 24px; border-radius: 40px; font-size: 13px; font-weight: 500; z-index: 9999; transition: transform 0.3s ease; white-space: nowrap; pointer-events: none; }
 #toast.show { transform: translateX(-50%) translateY(0); }
 
+/* ════════════════════════════════════════════════
+   FLOOR PLAN MODULE
+   ════════════════════════════════════════════════ */
+
+#floorplan-page { display: none; padding: 16px; }
+#floorplan-page.fp-active { display: block; }
+.fp-page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.fp-page-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--text); flex: 1; }
+.fp-back-main { display: flex; align-items: center; gap: 6px; background: var(--navy); border: none; color: #fff; border-radius: 10px; padding: 8px 16px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
+.fp-back-main:hover { opacity: 0.85; }
+
+#floor-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.floor-card { background: var(--card); border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(13,27,42,0.08); cursor: pointer; transition: all 0.2s; animation: cardIn 0.3s ease both; border: 1.5px solid var(--border); }
+.floor-card:hover { box-shadow: 0 6px 24px rgba(13,27,42,0.14); transform: translateY(-2px); border-color: var(--orange); }
+.floor-card.fp-inactive { opacity: 0.38; cursor: default; pointer-events: none; }
+.floor-card-thumb { height: 120px; background: #f0ece4; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.floor-card-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.floor-card-thumb-empty { font-size: 30px; color: var(--border); }
+.floor-card-pin-count { position: absolute; top: 8px; right: 8px; background: var(--orange); color: #fff; font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+.floor-card-body { padding: 12px 14px; }
+.floor-card-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.floor-card-sub { font-size: 12px; color: var(--text2); }
+.floor-card-dots { display: flex; gap: 4px; margin-top: 8px; flex-wrap: wrap; }
+.fp-dot { width: 8px; height: 8px; border-radius: 50%; }
+.fp-dot-red   { background: #e53e3e; }
+.fp-dot-amber { background: #f59e0b; }
+.fp-dot-green { background: #10b981; }
+
+/* Floor detail view */
+#fp-cards-view { display: block; }
+#fp-detail { display: none; }
+#fp-detail.fp-active { display: block; }
+#fp-detail-bar { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: var(--navy); margin: -16px -16px 16px; }
+.fp-detail-back { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.2); color: #fff; border-radius: 8px; padding: 7px 14px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; }
+.fp-detail-back:hover { background: rgba(255,255,255,0.22); }
+#fp-detail-name { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: #fff; flex: 1; }
+#fp-detail-count { font-size: 12px; color: rgba(255,255,255,0.65); }
+#fp-blueprint-wrap { overflow: auto; background: #c8c2b5; border-radius: 12px; max-height: calc(100vh - 200px); min-height: 400px; }
+#fp-blueprint-inner { position: relative; display: inline-block; min-width: 100%; }
+#fp-blueprint-img { display: block; width: 100%; min-width: 800px; user-select: none; pointer-events: none; }
+
+/* Pins on blueprint */
+.fp-pin { position: absolute; transform: translate(-50%, -100%); cursor: pointer; z-index: 10; transition: transform 0.15s; }
+.fp-pin:hover { z-index: 20; transform: translate(-50%, -108%) scale(1.2); }
+.fp-pin-marker { width: 18px; height: 18px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 2.5px solid rgba(255,255,255,0.9); box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+.fp-pin-tail { width: 2px; height: 5px; background: rgba(0,0,0,0.25); margin: 1px auto 0; }
+.fp-pin-red   .fp-pin-marker { background: #e53e3e; }
+.fp-pin-amber .fp-pin-marker { background: #f59e0b; }
+.fp-pin-green .fp-pin-marker { background: #10b981; }
+
+/* Pin popover */
+#fp-pin-pop { display: none; position: fixed; z-index: 5000; background: #fff; border: 1.5px solid var(--border); border-radius: 14px; box-shadow: 0 8px 32px rgba(13,27,42,0.2); padding: 14px; width: 244px; }
+#fp-pin-pop.open { display: block; animation: popIn 0.15s ease both; }
+.fp-pop-close-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
+.fp-pop-thumb { width: 44px; height: 44px; border-radius: 8px; background: #f0ece4; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--border); }
+.fp-pop-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.fp-pop-info { flex: 1; min-width: 0; }
+.fp-pop-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.3; }
+.fp-pop-artist { font-size: 11px; font-style: italic; color: var(--text2); }
+.fp-pop-x { background: none; border: none; font-size: 16px; color: var(--text2); cursor: pointer; flex-shrink: 0; line-height: 1; padding: 0; }
+.fp-pop-meta { border-top: 1px solid var(--border); padding-top: 8px; display: flex; flex-direction: column; gap: 5px; }
+.fp-pop-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; gap: 6px; }
+.fp-pop-lbl { color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; flex-shrink: 0; }
+.fp-pop-val { font-family: 'DM Mono', monospace; color: var(--text); text-align: right; word-break: break-word; }
+.fp-pop-status { padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; color: #fff; }
+.fp-pop-btn { width: 100%; margin-top: 10px; padding: 8px; border: 1.5px solid var(--orange); border-radius: 8px; background: none; color: var(--orange); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; }
+.fp-pop-btn:hover { background: var(--orange); color: #fff; }
+
+/* Place Pin modal */
+#placepin-overlay .modal-header { background: #1a2e45; }
+#placepin-overlay .modal-box { max-width: 680px; }
+#pp-step-floor, #pp-step-map { display: none; }
+#pp-step-floor.pp-active, #pp-step-map.pp-active { display: block; }
+.pp-floor-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+.pp-floor-opt { padding: 14px 8px; border: 1.5px solid var(--border); border-radius: 10px; background: #fafaf9; cursor: pointer; text-align: center; font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 600; color: var(--text2); transition: all 0.15s; }
+.pp-floor-opt:hover { border-color: var(--orange); color: var(--orange); background: #fff8f5; }
+.pp-floor-opt.pp-has-art { border-color: var(--teal); color: var(--teal); }
+.pp-opt-sub { font-size: 10px; font-family: 'DM Sans', sans-serif; color: var(--text2); margin-top: 3px; font-weight: 400; }
+.pp-selected-bar { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: #f7f5f1; border-radius: 8px; margin-bottom: 10px; }
+.pp-selected-name { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 600; color: var(--text); flex: 1; }
+.pp-change-btn { font-size: 11px; color: var(--orange); cursor: pointer; border: none; background: none; font-family: 'DM Sans', sans-serif; padding: 0; }
+.pp-change-btn:hover { text-decoration: underline; }
+#pp-map-wrap { position: relative; border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; background: #d8d2c5; cursor: crosshair; user-select: none; margin-bottom: 8px; }
+#pp-map-img { display: block; width: 100%; pointer-events: none; }
+#pp-temp-pin { position: absolute; transform: translate(-50%, -100%); pointer-events: none; display: none; }
+.pp-temp-marker { width: 22px; height: 22px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: var(--orange); border: 2.5px solid #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.4); }
+#pp-map-hint { font-size: 12px; color: var(--text2); text-align: center; padding: 4px 0 2px; }
+.card-action-btn.pin-placed { color: var(--teal); border-color: var(--teal); }
+
 @media (max-width: 640px) {
   #product-grid { grid-template-columns: 1fr; }
   .two-col { grid-template-columns: 1fr; }
@@ -527,6 +616,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
         <div style="font-size:11px;color:var(--text2);word-break:break-all" id="menu-name-email"></div>
       </div>
     </div>
+    <button class="menu-item settings-item" onclick="openFloorPlan()">&#128506;&#65039; Floor Plans</button>
     <button class="menu-item settings-item" onclick="openSettings()">⚙️ Settings</button>
     <button class="menu-item settings-item" onclick="openReports()">🖨️ Reports</button>
     <button class="menu-item settings-item" onclick="openMaintenance()">🔋 Maintenance</button>
@@ -655,6 +745,83 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
         </div>
       </div>
       <div id="maint-list" style="max-height:480px;overflow-y:auto"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ FLOOR PLAN PAGE ════ -->
+<div id="floorplan-page">
+  <!-- Floor cards view -->
+  <div id="fp-cards-view">
+    <div class="fp-page-header">
+      <button class="fp-back-main" onclick="closeFloorPlan()">&#8592; Inventory</button>
+      <div class="fp-page-title">&#128506;&#65039; Floor Plans</div>
+    </div>
+    <div id="floor-cards-grid"></div>
+  </div>
+  <!-- Floor detail view -->
+  <div id="fp-detail">
+    <div id="fp-detail-bar">
+      <button class="fp-detail-back" onclick="closeFloorDetail()">&#8592; Floors</button>
+      <div id="fp-detail-name"></div>
+      <div id="fp-detail-count"></div>
+    </div>
+    <div id="fp-blueprint-wrap">
+      <div id="fp-blueprint-inner">
+        <img id="fp-blueprint-img" src="" alt="">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ PIN POPOVER ════ -->
+<div id="fp-pin-pop">
+  <div class="fp-pop-close-row">
+    <div class="fp-pop-thumb" id="fp-pop-thumb">&#128444;</div>
+    <div class="fp-pop-info">
+      <div class="fp-pop-name" id="fp-pop-name"></div>
+      <div class="fp-pop-artist" id="fp-pop-artist"></div>
+    </div>
+    <button class="fp-pop-x" onclick="closePinPop()">&#10005;</button>
+  </div>
+  <div class="fp-pop-meta">
+    <div class="fp-pop-row"><span class="fp-pop-lbl">Zone</span><span class="fp-pop-val" id="fp-pop-zone"></span></div>
+    <div class="fp-pop-row"><span class="fp-pop-lbl">Location</span><span class="fp-pop-val" id="fp-pop-loc"></span></div>
+    <div class="fp-pop-row"><span class="fp-pop-lbl">Status</span><span id="fp-pop-status"></span></div>
+  </div>
+  <button class="fp-pop-btn" id="fp-pop-edit-btn">&#9999;&#65039; Edit Artwork</button>
+</div>
+
+<!-- ════ PLACE PIN MODAL ════ -->
+<div class="modal-overlay" id="placepin-overlay" onclick="if(event.target===this)closePlacePin()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header" id="placepin-header" style="background:#1a2e45">
+      <div class="modal-title" id="placepin-title">&#128205; Place Pin</div>
+      <button class="modal-close" onclick="closePlacePin()">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <!-- Step 1: Floor selection -->
+      <div id="pp-step-floor">
+        <div class="field-label" style="margin-bottom:12px">Select a floor for this artwork</div>
+        <div class="pp-floor-grid" id="pp-floor-grid"></div>
+      </div>
+      <!-- Step 2: Map click -->
+      <div id="pp-step-map">
+        <div class="pp-selected-bar">
+          <span class="pp-selected-name" id="pp-selected-floor-name"></span>
+          <button class="pp-change-btn" onclick="ppGoBack()">Change floor</button>
+        </div>
+        <div id="pp-map-wrap" onclick="ppHandleClick(event)">
+          <img id="pp-map-img" src="" alt="">
+          <div id="pp-temp-pin"><div class="pp-temp-marker"></div></div>
+        </div>
+        <div id="pp-map-hint">Click anywhere on the floor plan to place the pin</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closePlacePin()">Cancel</button>
+      <button class="btn-save" id="pp-remove-btn" onclick="removePin()" style="display:none;background:var(--pink)">&#128465;&#65039; Remove Pin</button>
+      <button class="btn-save" id="pp-save-btn" onclick="savePinLocation()" style="display:none">&#128190; Save Pin</button>
     </div>
   </div>
 </div>
@@ -1021,12 +1188,17 @@ function renderGrid(items) {
         '</div>' +
         '<div class="' + commentClass + '" ' + commentClick + '>' + commentText + '</div>' +
         byline +
-        '<div class="card-actions">' +
-          '<button class="card-action-btn" onclick="editProduct(\'' + p.id + '\')">✏️ Edit</button>' +
-          '<button class="card-action-btn" onclick="openNote(\'' + p.id + '\')">💬 Note</button>' +
-          '<button class="card-action-btn move" onclick="openMove(\'' + p.id + '\')">📦 Move</button>' +
-          '<button class="card-action-btn del" onclick="openDelete(\'' + p.id + '\')">🗑️ Delete</button>' +
-        '</div>' +
+        (function(){
+          var hasPinClass = (p.pinFloor && p.pinX != null) ? ' pin-placed' : '';
+          var pinLabel    = (p.pinFloor && p.pinX != null) ? '&#128205; Pinned' : '&#128205; Pin';
+          return '<div class="card-actions">' +
+            '<button class="card-action-btn" onclick="editProduct(\'' + p.id + '\')">&#9999;&#65039; Edit</button>' +
+            '<button class="card-action-btn" onclick="openNote(\'' + p.id + '\')">&#128172; Note</button>' +
+            '<button class="card-action-btn move" onclick="openMove(\'' + p.id + '\')">&#128230; Move</button>' +
+            '<button class="card-action-btn' + hasPinClass + '" onclick="openPlacePin(\'' + p.id + '\')">' + pinLabel + '</button>' +
+            '<button class="card-action-btn del" onclick="openDelete(\'' + p.id + '\')">&#128465;&#65039; Del</button>' +
+          '</div>';
+        })()+
       '</div></div>';
   }).join('');
 }
@@ -1790,6 +1962,366 @@ function renderEventLog() {
   }).catch(function(e) {
     document.getElementById('eventlog-list').innerHTML = '<div style="padding:24px;text-align:center;color:var(--pink);font-size:13px">Error: ' + e.message + '</div>';
   });
+}
+
+
+// ════════════════════════════════════════════════
+// FLOOR PLAN MODULE
+// ════════════════════════════════════════════════
+
+var FLOOR_IMAGES = {
+  'BSMT':  'floorplans/BSMT.png',
+  '1FL':   'floorplans/1FL.png',
+  '1MEZZ': 'floorplans/1MEZZ.png',
+  '2FL':   'floorplans/2FL.png',
+  '3FL':   'floorplans/3FL.png',
+  '4FL':   'floorplans/4FL.png',
+  '5FL':   'floorplans/5FL.png',
+  '5MEZZ': 'floorplans/5MEZZ.png',
+  '6FL':   'floorplans/6FL.png',
+  '7FL':   'floorplans/7FL.png',
+  '8FL':   'floorplans/8FL.png',
+  '9FL':   'floorplans/9FL.png',
+  '10FL':  'floorplans/10FL.png'
+};
+
+var FLOOR_LABELS = {
+  'BSMT':  'Basement',
+  '1FL':   '1st Floor',
+  '1MEZZ': '1st Floor Mezzanine',
+  '2FL':   '2nd Floor',
+  '3FL':   '3rd Floor',
+  '4FL':   '4th Floor',
+  '5FL':   '5th Floor',
+  '5MEZZ': '5th Floor Mezzanine',
+  '6FL':   '6th Floor',
+  '7FL':   '7th Floor',
+  '8FL':   '8th Floor',
+  '9FL':   '9th Floor',
+  '10FL':  '10th Floor'
+};
+
+var fpCurrentFloor = null;
+var fpPlacingId    = null;
+var fpPlacingFloor = null;
+var fpPendingX     = null;
+var fpPendingY     = null;
+
+// ── Navigation ──
+
+function openFloorPlan() {
+  closeMenu();
+  document.getElementById('main').style.display          = 'none';
+  document.getElementById('fp-cards-view').style.display = 'block';
+  document.getElementById('fp-detail').classList.remove('fp-active');
+  document.getElementById('floorplan-page').classList.add('fp-active');
+  renderFloorCards();
+}
+
+function closeFloorPlan() {
+  document.getElementById('floorplan-page').classList.remove('fp-active');
+  document.getElementById('main').style.display = 'block';
+  fpCurrentFloor = null;
+  closePinPop();
+}
+
+function openFloorDetail(floor) {
+  fpCurrentFloor = floor;
+  document.getElementById('fp-cards-view').style.display = 'none';
+  var det = document.getElementById('fp-detail');
+  det.classList.add('fp-active');
+
+  document.getElementById('fp-detail-name').textContent = FLOOR_LABELS[floor] || floor;
+
+  // Load blueprint image
+  var img = document.getElementById('fp-blueprint-img');
+  img.src = FLOOR_IMAGES[floor] || '';
+  img.onload = function() { renderFloorPins(floor); };
+  // Also attempt immediately in case already cached
+  if (img.complete && img.naturalWidth) renderFloorPins(floor);
+}
+
+function closeFloorDetail() {
+  fpCurrentFloor = null;
+  document.getElementById('fp-detail').classList.remove('fp-active');
+  document.getElementById('fp-cards-view').style.display = 'block';
+  closePinPop();
+  // Clear pins
+  document.getElementById('fp-blueprint-inner').querySelectorAll('.fp-pin').forEach(function(el){ el.remove(); });
+  document.getElementById('fp-detail-count').textContent = '';
+}
+
+// ── Floor Cards ──
+
+function renderFloorCards() {
+  var counts = {};
+  FLOOR_ORDER.forEach(function(f) { counts[f] = 0; });
+  products.forEach(function(p) {
+    if (p.pinFloor && p.pinX != null) counts[p.pinFloor] = (counts[p.pinFloor] || 0) + 1;
+  });
+
+  var html = '';
+  FLOOR_ORDER.forEach(function(f, i) {
+    var count    = counts[f] || 0;
+    var inactive = count === 0 ? ' fp-inactive' : '';
+    var label    = FLOOR_LABELS[f] || f;
+    var imgSrc   = FLOOR_IMAGES[f] || '';
+    var thumbHtml = '<img src="' + imgSrc + '" alt="" onerror="this.style.display=\'none\'">';
+    var countBadge = count > 0 ? '<div class="floor-card-pin-count">' + count + ' pinned</div>' : '';
+    var subText    = count > 0 ? count + ' artwork' + (count !== 1 ? 's' : '') + ' placed' : 'No artworks pinned';
+
+    // Status dots for this floor
+    var dots = '';
+    products.filter(function(p){ return p.pinFloor === f && p.pinX != null; }).forEach(function(p) {
+      var st = getPinState(p);
+      dots += '<div class="fp-dot fp-dot-' + (st === 'alarm' ? 'red' : st === 'supervisory' ? 'amber' : 'green') + '"></div>';
+    });
+
+    html += '<div class="floor-card' + inactive + '" onclick="openFloorDetail(\'' + f + '\')" style="animation-delay:' + (i * 0.04) + 's">' +
+      '<div class="floor-card-thumb">' + thumbHtml + countBadge + '</div>' +
+      '<div class="floor-card-body">' +
+        '<div class="floor-card-name">' + esc(label) + '</div>' +
+        '<div class="floor-card-sub">' + subText + '</div>' +
+        (dots ? '<div class="floor-card-dots">' + dots + '</div>' : '') +
+      '</div>' +
+    '</div>';
+  });
+
+  document.getElementById('floor-cards-grid').innerHTML = html;
+}
+
+// ── Pin State ──
+
+function getPinState(p) {
+  if (p.alarmState === 'alarm')       return 'alarm';
+  if (p.alarmState === 'supervisory') return 'supervisory';
+  return 'normal';
+}
+
+function getPinColor(state) {
+  if (state === 'alarm')       return '#e53e3e';
+  if (state === 'supervisory') return '#f59e0b';
+  return '#10b981';
+}
+
+// ── Floor Pin Rendering ──
+
+function renderFloorPins(floor) {
+  var inner = document.getElementById('fp-blueprint-inner');
+  // Remove existing pins
+  inner.querySelectorAll('.fp-pin').forEach(function(el){ el.remove(); });
+
+  var pinned = products.filter(function(p){ return p.pinFloor === floor && p.pinX != null && p.pinY != null; });
+  var count  = pinned.length;
+  document.getElementById('fp-detail-count').textContent = count + ' artwork' + (count !== 1 ? 's' : '');
+
+  pinned.forEach(function(p) {
+    var state = getPinState(p);
+    var color = getPinColor(state);
+    var pin   = document.createElement('div');
+    pin.className    = 'fp-pin fp-pin-' + state;
+    pin.style.left   = p.pinX + '%';
+    pin.style.top    = p.pinY + '%';
+    pin.innerHTML    = '<div class="fp-pin-marker" style="background:' + color + '"></div><div class="fp-pin-tail"></div>';
+    pin.title        = p.name || '';
+    pin.setAttribute('data-id', p.id);
+    pin.onclick      = function(e) { e.stopPropagation(); openPinPop(e, p.id); };
+    inner.appendChild(pin);
+  });
+}
+
+// ── Pin Popover ──
+
+function openPinPop(e, id) {
+  var p = products.find(function(x){ return x.id === id; });
+  if (!p) return;
+  closePinPop();
+
+  var thumbEl = document.getElementById('fp-pop-thumb');
+  thumbEl.innerHTML = p.image ? '<img src="' + p.image + '" alt="">' : '&#128444;';
+
+  document.getElementById('fp-pop-name').textContent   = p.name || '';
+  document.getElementById('fp-pop-artist').textContent = 'by ' + (p.artist || '');
+  document.getElementById('fp-pop-zone').textContent   = p.zone || '—';
+  document.getElementById('fp-pop-loc').textContent    = p.location || '—';
+
+  var state  = getPinState(p);
+  var colors = { alarm: '#e53e3e', supervisory: '#f59e0b', normal: '#10b981' };
+  var labels = { alarm: '&#128680; Alarm', supervisory: '&#9888;&#65039; Supervisory', normal: '&#10003; Normal' };
+  document.getElementById('fp-pop-status').innerHTML =
+    '<span class="fp-pop-status" style="background:' + colors[state] + '">' + labels[state] + '</span>';
+
+  document.getElementById('fp-pop-edit-btn').onclick = function(){ closePinPop(); editProduct(id); };
+
+  var pop  = document.getElementById('fp-pin-pop');
+  pop.classList.add('open');
+
+  // Position near click, keep within viewport
+  var x = e.clientX + 12, y = e.clientY - 20;
+  if (x + 252 > window.innerWidth)  x = e.clientX - 252 - 8;
+  if (y + 240 > window.innerHeight) y = window.innerHeight - 250;
+  if (y < 60) y = 60;
+  pop.style.left = x + 'px';
+  pop.style.top  = y + 'px';
+}
+
+function closePinPop() {
+  document.getElementById('fp-pin-pop').classList.remove('open');
+}
+
+// Close pin pop on outside click
+document.addEventListener('click', function(e) {
+  var pop = document.getElementById('fp-pin-pop');
+  if (pop && pop.classList.contains('open') && !pop.contains(e.target)) closePinPop();
+});
+
+// ── Place / Move Pin ──
+
+function openPlacePin(id) {
+  var p = products.find(function(x){ return x.id === id; });
+  if (!p) return;
+  fpPlacingId    = id;
+  fpPlacingFloor = p.pinFloor || null;
+  fpPendingX     = (p.pinX != null) ? p.pinX : null;
+  fpPendingY     = (p.pinY != null) ? p.pinY : null;
+
+  var hasPin = !!(p.pinFloor && p.pinX != null);
+  document.getElementById('placepin-title').textContent    = hasPin ? '📍 Move Pin' : '📍 Place Pin';
+  document.getElementById('pp-remove-btn').style.display   = hasPin ? '' : 'none';
+  document.getElementById('pp-save-btn').style.display     = 'none';
+
+  renderPpFloorGrid();
+
+  if (hasPin) {
+    // Go straight to map with existing floor
+    ppSelectFloor(p.pinFloor);
+  } else {
+    showPpStep('floor');
+  }
+
+  document.getElementById('placepin-overlay').classList.add('open');
+}
+
+function closePlacePin() {
+  document.getElementById('placepin-overlay').classList.remove('open');
+  document.getElementById('pp-temp-pin').style.display = 'none';
+  document.getElementById('pp-map-img').src = '';
+  fpPlacingId    = null;
+  fpPlacingFloor = null;
+  fpPendingX     = null;
+  fpPendingY     = null;
+}
+
+function showPpStep(step) {
+  document.getElementById('pp-step-floor').classList.toggle('pp-active', step === 'floor');
+  document.getElementById('pp-step-map').classList.toggle('pp-active',   step === 'map');
+}
+
+function renderPpFloorGrid() {
+  // Count pinned artworks per floor, excluding current artwork
+  var counts = {};
+  products.forEach(function(p) {
+    if (p.id !== fpPlacingId && p.pinFloor && p.pinX != null)
+      counts[p.pinFloor] = (counts[p.pinFloor] || 0) + 1;
+  });
+  var html = '';
+  FLOOR_ORDER.forEach(function(f) {
+    var count = counts[f] || 0;
+    var cls   = count > 0 ? ' pp-has-art' : '';
+    var sub   = count > 0 ? '<div class="pp-opt-sub">' + count + ' pinned</div>' : '';
+    html += '<div class="pp-floor-opt' + cls + '" onclick="ppSelectFloor(\'' + f + '\')">' + f + sub + '</div>';
+  });
+  document.getElementById('pp-floor-grid').innerHTML = html;
+}
+
+function ppSelectFloor(floor) {
+  fpPlacingFloor = floor;
+  document.getElementById('pp-selected-floor-name').textContent = (FLOOR_LABELS[floor] || floor) + '  (' + floor + ')';
+
+  var img = document.getElementById('pp-map-img');
+  img.src = FLOOR_IMAGES[floor] || '';
+
+  // Check if this artwork already has a pin on this exact floor
+  var p         = products.find(function(x){ return x.id === fpPlacingId; });
+  var sameFloor = p && p.pinFloor === floor && p.pinX != null;
+
+  if (sameFloor) {
+    // Show existing pin position
+    fpPendingX = p.pinX;
+    fpPendingY = p.pinY;
+    var showExisting = function() { ppShowTempPin(p.pinX, p.pinY); };
+    if (img.complete && img.naturalWidth) showExisting();
+    else img.onload = showExisting;
+    document.getElementById('pp-save-btn').style.display = '';
+    document.getElementById('pp-map-hint').textContent   = 'Click to move the pin, or Save Pin to keep current position';
+  } else {
+    document.getElementById('pp-temp-pin').style.display = 'none';
+    fpPendingX = null;
+    fpPendingY = null;
+    document.getElementById('pp-save-btn').style.display = 'none';
+    document.getElementById('pp-map-hint').textContent   = 'Click anywhere on the floor plan to place the pin';
+  }
+
+  showPpStep('map');
+}
+
+function ppGoBack() {
+  document.getElementById('pp-temp-pin').style.display = 'none';
+  showPpStep('floor');
+}
+
+function ppHandleClick(e) {
+  var wrap = document.getElementById('pp-map-wrap');
+  var rect = wrap.getBoundingClientRect();
+  var xPct = ((e.clientX - rect.left) / rect.width)  * 100;
+  var yPct = ((e.clientY - rect.top)  / rect.height) * 100;
+  fpPendingX = Math.round(xPct * 10) / 10;
+  fpPendingY = Math.round(yPct * 10) / 10;
+  ppShowTempPin(fpPendingX, fpPendingY);
+  document.getElementById('pp-save-btn').style.display = '';
+  document.getElementById('pp-map-hint').textContent   = 'Click to reposition · Save Pin when ready';
+}
+
+function ppShowTempPin(xPct, yPct) {
+  var pin = document.getElementById('pp-temp-pin');
+  pin.style.left    = xPct + '%';
+  pin.style.top     = yPct + '%';
+  pin.style.display = 'block';
+}
+
+function savePinLocation() {
+  if (!fpPlacingId || !fpPlacingFloor || fpPendingX == null || fpPendingY == null) {
+    showToast('&#9888;&#65039; Click the floor plan to place the pin first');
+    return;
+  }
+  var savedFloor = fpPlacingFloor;
+  db.collection('products').doc(fpPlacingId).update({
+    pinFloor: savedFloor,
+    pinX:     fpPendingX,
+    pinY:     fpPendingY,
+    editedBy: currentUser,
+    editedAt: Date.now()
+  }).then(function() {
+    showToast('&#128205; Pin saved');
+    closePlacePin();
+    if (fpCurrentFloor === savedFloor) renderFloorPins(savedFloor);
+  }).catch(function(e){ showToast('&#10060; Error: ' + e.message); });
+}
+
+function removePin() {
+  if (!fpPlacingId) return;
+  var savedFloor = fpPlacingFloor;
+  db.collection('products').doc(fpPlacingId).update({
+    pinFloor: firebase.firestore.FieldValue.delete(),
+    pinX:     firebase.firestore.FieldValue.delete(),
+    pinY:     firebase.firestore.FieldValue.delete(),
+    editedBy: currentUser,
+    editedAt: Date.now()
+  }).then(function() {
+    showToast('&#128205; Pin removed');
+    closePlacePin();
+    if (fpCurrentFloor) renderFloorPins(fpCurrentFloor);
+  }).catch(function(e){ showToast('&#10060; Error: ' + e.message); });
 }
 
 
